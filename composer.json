@@ -11,7 +11,7 @@
     "minimum-stability": "dev",
     "require": {},
     "scripts": {
-        "post-create-project-cmd": [
+        "post-install-cmd": [
             "php -r \"copy('config/EasyListConfig.php', 'app/config/EasyListConfig.php');\""
         ]
     }
