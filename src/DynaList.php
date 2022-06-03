@@ -7,6 +7,7 @@ namespace EasyList2;
 use Exception;
 use PDO;
 use PDOException;
+use DateTime;
 
 class DynaList
 {
@@ -39,8 +40,8 @@ class DynaList
         			array("condition" => "age = ?", "value" => "<FILTER-NAME>", "operation" => "OR" )
         		)
        ,"filter" => array( //Either filter of condition will be condier
-            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|TIME|INTEGER|STRING", "datetime-format-to"=>"d/m/Y", "consider-empty" => "YES|NO : Default - NO"),
-            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING", "datetime-format-to"=>"PHP date format d/m/Y", "consider-empty" => "YES|NO : Default - NO"),
+            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|TIME|INTEGER|STRING", "datetime-format-from"=>"d/m/Y : Use php date format", "datetime-format-to"=>"d/m/Y", "consider-empty" => "YES|NO : Default - NO"),
+            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING", "datetime-format-from"=>"d/m/Y : Use php date format", "datetime-format-to"=>"PHP date format d/m/Y", "consider-empty" => "YES|NO : Default - NO"),
             )
         ,"order" 	=> "<Comma separated order coluns with ASC/DESC key >"
         ,"return-data" => "<HTML / JSON / QUERY>"
@@ -264,6 +265,7 @@ class DynaList
             $postVariable = !isset($eachfilter['form-field']) ? "" : (isset($_POST[$eachfilter['form-field']]) ? $_POST[$eachfilter['form-field']] : "");
             $operation = isset($eachfilter['operation']) ? $eachfilter['operation'] : "";
             $type = isset($eachfilter['type']) ? trim(strtoupper($eachfilter['type'])) : "STRING";
+            $dateFormatFrom = isset($eachfilter['datetime-format-from']) ? trim($eachfilter['datetime-format-from']) : "Y-m-d";
             $dateFormatTo = isset($eachfilter['datetime-format-to']) ? trim($eachfilter['datetime-format-to']) : "Y-m-d";
             $emoty_consider = isset($eachfilter['consider-empty']) ? trim(strtoupper($eachfilter['consider-empty'])) : "NO";
             
@@ -288,8 +290,15 @@ class DynaList
                     case 'DATETIME' :
                     case 'DATE' :
                     case 'TIME' :
-                        $subValues = date($dateFormatTo, strtotime($postVariable));
-                        $subfilter .= "'{$subValues}'";
+                        $dateObj = DateTime::createFromFormat($dateFormatFrom, $postVariable);
+                        if($dateObj){
+                            $new_date = $dateObj->format($dateFormatTo);
+                            $subfilter .= "'{$new_date}'";
+                        } else {
+                            $subfilter .= "''"; //:TODO Throw error
+                            //$subValues = date($dateFormatTo, strtotime($postVariable));
+                            //$subfilter .= "'{$subValues}'";
+                        }
                         break;
                     case 'STRING' :
                         if(stripos($ary_subfilter[0], " LIKE ") !== false){
