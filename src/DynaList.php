@@ -75,9 +75,9 @@ class DynaList
              "page_size"       => $page_size
             ,"page"            => $page
             ,"total_records"   => $total_records
-            ,"next_page"       => 1,
-            ,"prev_page"       => 1,
-            ,"last_page"       => 1,
+            ,"next_page"       => 1
+            ,"prev_page"       => 1
+            ,"last_page"       => 1
             ,"return_data"     => $return_data
             ,"data"            => array()
         );
