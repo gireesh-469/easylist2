@@ -10,36 +10,13 @@ use PDOException;
 
 class DynaList
 {
-    //public static $host;
-    //public static $database;
-    //public static $username;
-    //public static $password;
     public static $connection;
-    
-    /**
-     * @param array $info
-     * Description : Store sql credential 
-     */
-    /*public static function Initialise($info)
-    {
-        static::$host     = $info['hostname'];
-        static::$database = $info['database'];
-        static::$username = $info['username'];
-        static::$password = $info['password'];
-    }*/
     
     /**
      * Creates Connection
      */
     public static function Connection()
     {
-        /*try {
-            self::$connection = new PDO("mysql:host=".static::$host.";dbname=". static::$database, static::$username, static::$password);
-            self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch(PDOException $e) {
-            throw new Exception("Connection failed : " . $e->getMessage());
-        }*/
-        
         $conn = new ListConnection();
         self::$connection = $conn->setConnection();
     }
@@ -61,8 +38,12 @@ class DynaList
         			array("condition" => "name = ?", "value" => "<FILTER-NAME>", "operation" => "AND" ),
         			array("condition" => "age = ?", "value" => "<FILTER-NAME>", "operation" => "OR" )
         		)
+       ,"filter" => array( //Either filter of condition will be condier
+            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|TIME|INTEGER|STRING", "datetime-format-to"=>"d/m/Y", "consider-empty" => "YES|NO : Default - NO"),
+            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING", "datetime-format-to"=>"PHP date format d/m/Y", "consider-empty" => "YES|NO : Default - NO"),
+            )
         ,"order" 	=> "<Comma separated order coluns with ASC/DESC key >"
-        ,"return-data" => "<HTML / JSON / PLAIN / QUERY>"
+        ,"return-data" => "<HTML / JSON / QUERY>"
         ,"view"	    => "<view location if return-data is HTML>"
         ,"page" 	=> "<page number>"
         ,"pagination" 	=> "YES | NO"
@@ -72,6 +53,7 @@ class DynaList
     public static function Page($options)
     {
         $sql                = "";
+        $count_sql          = "";
         $select             = "";
         $query              = "";
         $viewData           = "";
@@ -82,6 +64,10 @@ class DynaList
         $page               = isset($_POST['page']) ? $_POST['page'] : (isset($options["page"]) ? $options["page"] : 1);
         $total_records      = isset($_POST['total-records']) ? $_POST['total-records'] : (isset($options["total-records"]) ? $options["page"] : 0);
         $pagination         = isset($options["pagination"]) ? $options["pagination"] : 'YES';
+        
+        $order              = isset($options["order"]) ? $options["order"] : "";
+        $sort               = isset($_POST['sort']) ? $_POST['sort'] : "";
+        $sort_type          = isset($_POST['sort-type']) ? $_POST['sort-type'] : "";
         
         $mainData = array(
              "page-size"       => $page_size
@@ -105,8 +91,12 @@ class DynaList
                 $sql .= $options['joins'];
             }
             
-            if(isset($options['conditions']) && $options['conditions'] !=""){
-                $subCondition = self::conditionBuilder($options['conditions']);
+            //Condtion option will not consider if Filter option is present
+            if(isset($options['filter']) && is_array($options['filter'])){
+                $subCondition = self::ConditionBuilderForFilter($options['filter']);
+                $sql .= " WHERE " .  $subCondition;
+            } elseif(isset($options['conditions']) && $options['conditions'] !=""){
+                $subCondition = self::ConditionBuilder($options['conditions']);
                 $sql .= " WHERE " .  $subCondition;
             }
             
@@ -115,28 +105,30 @@ class DynaList
             }
             
             if(isset($options['having']) && $options['having'] !=""){
-                $subCondition = self::conditionBuilder($options['having']);
+                $subCondition = self::ConditionBuilder($options['having']);
                 $sql .=  " HAVING " . $subCondition;
             }
             
-            if(isset($options['order']) && $options['order'] !=""){
+            //Count query - No order clause requred
+            $count_sql = $sql;
+            
+            if($sort != ""){
+                $sql .=  " ORDER BY " . self::Decode($sort) . " $sort_type ";
+            } elseif($order != ""){
                 $sql .=  " ORDER BY " . $options['order'];
             }
-                    
+            
             if($return_data != "QUERY"){
                 self::Connection();
-                //$conn = mysqli_connect(self::$host, self::$username, self::$password) OR trigger_error(mysql_error(),E_USER_ERROR);
-                //mysql_select_db(self::$database, $conn);
                 
                 //Start : Pagination section 
                 if($pagination == "YES"){
                     if($total_records == 0){
                         
-                        $stmt = self::$connection->prepare("SELECT COUNT(*) AS count FROM (SELECT 1 " . $sql . ") AS query");
+                        $stmt = self::$connection->prepare("SELECT COUNT(*) AS count FROM (SELECT 1 " . $count_sql . ") AS query");
                         $stmt->execute();
                         $rec = $stmt->fetch(PDO::FETCH_ASSOC);
-                        //$query = mysqli_query($conn, "SELECT COUNT(*) AS count FROM (SELECT 1 " . $sql . ") AS query") OR trigger_error(mysql_error(),E_USER_ERROR);
-                        //$rec = mysql_fetch_assoc($query);
+
                         $mainData["total-records"] = $total_records = ($rec["count"]) ? $rec["count"] : 0;
                     }
                     
@@ -155,29 +147,23 @@ class DynaList
                 $stmt = self::$connection->prepare($select . $sql);
                 $stmt->execute();
                 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                
-                //$query = mysqli_query($conn, $select . $sql) OR trigger_error(mysql_error(),E_USER_ERROR);
-                //if (mysql_num_rows($query) > 0) {
-                //    while ($row = mysql_fetch_assoc($query)) {
-                //        $data[] = $row;
-                //    }
-                //}
             }
             
             //Handling return data
             switch($return_data){
                 case 'HTML' :
-                    //:TODO
-                    $viewData = "";
+                    if(isset($options["view"]) && $options["view"] != ""){
+                        ob_start();
+                        require $options["view"];
+                        $viewData = ob_get_clean();
+                        $viewData = json_encode($viewData); //, JSON_UNESCAPED_SLASHES
+                    } else {
+                        $viewData = "";
+                    }
                     break;
 
                 case 'JSON' :
                     $viewData = $data;
-                    break;
-
-                case 'PLAIN' :
-                    //:TODO
-                    $viewData = "";
                     break;
 
                 case 'QUERY' :
@@ -195,9 +181,9 @@ class DynaList
         
             $mainData["data"] = $viewData;
             
-            mysqli_close($conn);
+            mysql_close($conn);
             
-        } catch(Exception $e){
+        } catch(Excetion $e){
             //throw new Exception($e-getMessage());
         }
         
@@ -209,14 +195,14 @@ class DynaList
      * @return string
      * Description : Prepare condtions by including values 
      */
-    public static function conditionBuilder($condition){
+    public static function ConditionBuilder($condition){
         $result = "";
         
         foreach($condition AS $eachCondition){
             $subCondition = "";
             $subValues = "";
             
-            $clean_condition = self::ceanQuotes($eachCondition['condition']);
+            $clean_condition = self::CeanQuotes($eachCondition['condition']);
             $ary_subCondition = explode("?", $clean_condition);
             
             for($i = 0; $i < count($ary_subCondition); $i++){
@@ -250,28 +236,126 @@ class DynaList
      * @return String
      * Description : Remove quotes before question marks
      */
-    public static function ceanQuotes($condition){
+    public static function CeanQuotes($condition){
         $result = $condition;
         
         $pattern = "/'\s*\?\s*'/i";
-        $result = preg_replace($pattern, ' ? ', $result);
+        $result = preg_replace($pattern, '?', $result);
         $pattern = '/"\s*\?\s*"/i';
-        $result = preg_replace($pattern, ' ? ', $result);
+        $result = preg_replace($pattern, '?', $result);
         
         return $result;
     }
     
-    
-    
-    
     /**
-     * @param array $options
+     * @param array $filter
+     * @return string
+     * Description : Prepare filter based on the conditions 
      */
-    public static function List($options)
-    {
+    public static function ConditionBuilderForFilter($filter){
+    
+        $result = "";
+        
+        foreach($filter AS $eachfilter){
+            $subfilter = "";
+            $subValues = "";
+            
+            $condition = isset($eachfilter['condition']) ? $eachfilter['condition'] : "";
+            $postVariable = !isset($eachfilter['form-field']) ? "" : (isset($_POST[$eachfilter['form-field']]) ? $_POST[$eachfilter['form-field']] : "");
+            $operation = isset($eachfilter['operation']) ? $eachfilter['operation'] : "";
+            $type = isset($eachfilter['type']) ? trim(strtoupper($eachfilter['type'])) : "STRING";
+            $dateFormatTo = isset($eachfilter['datetime-format-to']) ? trim($eachfilter['datetime-format-to']) : "Y-m-d";
+            $emoty_consider = isset($eachfilter['consider-empty']) ? trim(strtoupper($eachfilter['consider-empty'])) : "NO";
+            
+            if($condition && ($postVariable || $emoty_consider == "NO")){
+                $clean_filter = self::CeanQuotes($condition);
+                $ary_subfilter = explode("?", $clean_filter);
+                
+                $subfilter = $ary_subfilter[0] . " ";
+                
+                if($type != "ARRAY" && is_array($postVariable)){
+                    $postVariable = $postVariable[0];
+                }
+                
+                switch($type){
+                    case 'BOOLEAN' :
+                        if($postVariable != ""){
+                            $subfilter .= "{$postVariable}";
+                        } else {
+                            $subfilter .= "0";
+                        }
+                        break;
+                    case 'DATETIME' :
+                    case 'DATE' :
+                    case 'TIME' :
+                        $subValues = date($dateFormatTo, strtotime($postVariable));
+                        $subfilter .= "'{$subValues}'";
+                        break;
+                    case 'STRING' :
+                        if(stripos($ary_subfilter[0], " LIKE ") !== false){
+                            $subfilter = trim($subfilter);
+                            $subfilter .= $postVariable;
+                        } else {
+                            $subfilter .= "'" . $postVariable . "'";
+                        }
+                        break;
+                    case 'ARRAY' :
+                        if(is_array($postVariable)){
+                            $subValues = "'" . implode("','", $postVariable) . "'";
+                            $subfilter .= $subValues;
+                        } else {
+                            $subfilter .= "'" . $postVariable . "'";
+                        }
+                        break;
+                }
+                
+                $subfilter .= $ary_subfilter[1] . " " . $eachfilter["operation"] . " ";
+            }
+            
+            $result .= $subfilter;
+        }
+        
+        $result = trim($result, 'AND ');
+        $result = trim($result, 'OR ');
+
+        return $result;
     }
     
+    /**
+     * 
+     * @param String $string
+     * @return String
+     * Description : Encode to base64
+     */
+    public static function Encode($string)
+    {
+        return base64_encode($string);
+    }
     
+    /**
+     * 
+     * @param String $string
+     * @return String
+     * Description : Decode String from base64
+     */
+    public static function Decode($string)
+    {
+        return base64_decode($string);
+    }
+    
+    /**
+     * @param array $config
+     */
+    public static function List($config)
+    {
+        if(!array_key_exists($config['column'], $config)){
+            $config['column'] = array_map(function($obj){ $obj['sort'] = trim(base64_encode($obj['sort'])); return $obj; }, $config['column']);
+        }
+        
+        $config = rawurlencode(str_replace('null', '""', json_encode($config)));
+        
+        echo '<input type="hidden" name="easylist-config" id="easylist-config" value=\''.$config.'\' />';
+    }
     
     
 }
