@@ -9,10 +9,5 @@
         "classmap": ["src/"]
     },
     "minimum-stability": "dev",
-    "require": {},
-    "scripts": {
-        "post-install-cmd": [
-            "php -r \"copy('vendor/easylist/easylist2/config/EasyListConfig.php', 'app/config/EasyListConfig.php');\""
-        ]
-    }
+    "require": {}
 }
