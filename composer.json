@@ -4,7 +4,7 @@
     "type": "library",
     "autoload": {
         "psr-4": {
-            "Easylist\\Easylist2\\": "src"
+            "Easylist2\\": "src"
         },
         "classmap": ["src/"]
     },

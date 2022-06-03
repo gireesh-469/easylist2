@@ -1,8 +1,8 @@
 <?php
 /**
- * @package EasyList
+ * @package EasyList2
  */
-namespace Easylist\EasyList2;
+namespace EasyList2;
 
 use Exception;
 use PDO;
