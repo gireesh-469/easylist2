@@ -181,9 +181,9 @@ class DynaList
         
             $mainData["data"] = $viewData;
             
-            mysql_close($conn);
+            $conn = NULL;
             
-        } catch(Excetion $e){
+        } catch(Exception $e){
             //throw new Exception($e-getMessage());
         }
         

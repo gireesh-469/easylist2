@@ -53,7 +53,7 @@ class ListConnection
                     $this->conn = new PDO("pgsql:host=$this->host;dbname=$this->database", $this->username, $this->password);// newly added
                     break;
                 case 'SYBASE':
-                    $this->conn = new PDO ("dblib:host=$hostname:$this->port;dbname=$this->database","$this->username","$this->password"); // newly added
+                    $this->conn = new PDO ("dblib:host=$this->host:$this->port;dbname=$this->database","$this->username","$this->password"); // newly added
                     //port = 10060;
                     break;
                 case 'INFORMIX':
