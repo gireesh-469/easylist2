@@ -8,6 +8,7 @@ use Exception;
 use PDO;
 use PDOException;
 use DateTime;
+use EasyList2\Exceptions\EasyListException;
 
 class DynaList
 {
@@ -82,7 +83,7 @@ class DynaList
         
         try{
             if(!isset($options['select']) || trim($options['select']) == "" || !isset($options['from']) || trim($options['from']) == "" ){
-                throw new EasyList_Exception("Select OR From clause is missing.");
+                throw new EasyListException("Select OR From clause is missing.");
             } else {
                 $select = "SELECT " . $options['select'];
                 $sql .= " FROM " . $options['from'];
@@ -132,7 +133,7 @@ class DynaList
                             
                             $mainData["total_records"] = $total_records = ($rec["count"]) ? $rec["count"] : 0;
                         }catch(Exception $e){
-                            throw new EasyList_Exception("Error in count query : " . $e-getMessage());
+                            throw new EasyListException("Error in count query : " . $e->getMessage());
                         }
                     }
                     
@@ -153,7 +154,7 @@ class DynaList
                     $stmt->execute();
                     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }catch(Exception $e){
-                    throw new EasyList_Exception("Error in the query : " . $e-getMessage());
+                    throw new EasyListException("Error in the query : " . $e->getMessage());
                 }
             }
             
@@ -192,7 +193,7 @@ class DynaList
             $conn = NULL;
             
         } catch(Exception $e){
-            $mainData["data"] = array("message" => $e-getMessage());
+            $mainData["data"] = array("message" => $e->getMessage());
             return json_encode($mainData);
         }
         
@@ -303,7 +304,7 @@ class DynaList
                             $new_date = $dateObj->format($dateFormatTo);
                             $subfilter .= "'{$new_date}'";
                         } else {
-                            throw new EasyList_Exception("Date not matching with the 'datetime_format_from'. ");
+                            throw new EasyListException("Date not matching with the 'datetime_format_from'. ");
                             $subfilter .= "''"; 
                         }
                         break;

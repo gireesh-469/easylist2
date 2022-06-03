@@ -7,7 +7,7 @@ namespace EasyList2;
 use Exception;
 use PDO;
 use PDOException;
-use DateTime; 
+use EasyList2\Exceptions\EasyListException;
 
 class ListConnection
 {
