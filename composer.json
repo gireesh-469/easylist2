@@ -9,5 +9,10 @@
         "classmap": ["src/"]
     },
     "minimum-stability": "dev",
-    "require": {}
+    "require": {},
+    "scripts": {
+        "post-create-project-cmd": [
+            "php -r \"copy('config/EasyListConfig.php', 'app/config/EasyListConfig.php');\""
+        ]
+    }
 }
