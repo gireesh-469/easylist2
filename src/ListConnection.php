@@ -24,7 +24,11 @@ class ListConnection
     
     public function __construct($db = NULL){
         if($db == NULL){
-            require_once('app/config/EasyListConfig.php');
+            try{
+                require('app/config/EasyListConfig.php');
+            } catch(Exception $e){
+                throw new EasyListException("Please configure DB at 'app/config/EasyListConfig.php'. Refer sample file at plugin's 'config' folder.");
+            }            
         }
         
         $this->host        = $db['host'];

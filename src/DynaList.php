@@ -75,6 +75,9 @@ class DynaList
              "page_size"       => $page_size
             ,"page"            => $page
             ,"total_records"   => $total_records
+            ,"next_page"       => 1,
+            ,"prev_page"       => 1,
+            ,"last_page"       => 1,
             ,"return_data"     => $return_data
             ,"data"            => array()
         );
@@ -144,6 +147,7 @@ class DynaList
                     
                     $mainData["next_page"] = $next_page;
                     $mainData["prev_page"] = $prev_page;
+                    $mainData["last_page"] = $total_records_pages;
                     
                     $sql .= " LIMIT {$offset},{$page_size}";
                 }
