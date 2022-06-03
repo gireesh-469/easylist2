@@ -40,15 +40,15 @@ class DynaList
         			array("condition" => "age = ?", "value" => "<FILTER-NAME>", "operation" => "OR" )
         		)
        ,"filter" => array( //Either filter of condition will be condier
-            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|TIME|INTEGER|STRING", "datetime-format-from"=>"d/m/Y : Use php date format", "datetime-format-to"=>"d/m/Y", "consider-empty" => "YES|NO : Default - NO"),
-            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING", "datetime-format-from"=>"d/m/Y : Use php date format", "datetime-format-to"=>"PHP date format d/m/Y", "consider-empty" => "YES|NO : Default - NO"),
+            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|TIME|INTEGER|STRING", "datetime_format_from"=>"d/m/Y : Use php date format", "datetime_format_to"=>"d/m/Y", "consider_empty" => "YES|NO : Default - NO"),
+            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING", "datetime_format_from"=>"d/m/Y : Use php date format", "datetime_format_to"=>"PHP date format d/m/Y", "consider_empty" => "YES|NO : Default - NO"),
             )
         ,"order" 	=> "<Comma separated order coluns with ASC/DESC key >"
-        ,"return-data" => "<HTML / JSON / QUERY>"
-        ,"view"	    => "<view location if return-data is HTML>"
+        ,"return_data" => "<HTML / JSON / QUERY>"
+        ,"view"	    => "<view location if return_data is HTML>"
         ,"page" 	=> "<page number>"
         ,"pagination" 	=> "YES | NO"
-        ,"page-size" => "<page size>"
+        ,"page_size" => "<page size>"
        )
      */
     public static function Page($options)
@@ -60,10 +60,10 @@ class DynaList
         $viewData           = "";
         $subCondition       = "";
         
-        $return_data        = isset($options["return-data"]) ? $options["return-data"] : "JSON";
-        $page_size          = isset($_POST['page-size']) ? $_POST['page-size'] : (isset($options["page-size"]) ? $options["page-size"] : 25);
+        $return_data        = isset($options["return_data"]) ? $options["return_data"] : "JSON";
+        $page_size          = isset($_POST['page_size']) ? $_POST['page_size'] : (isset($options["page_size"]) ? $options["page_size"] : 25);
         $page               = isset($_POST['page']) ? $_POST['page'] : (isset($options["page"]) ? $options["page"] : 1);
-        $total_records      = isset($_POST['total-records']) ? $_POST['total-records'] : (isset($options["total-records"]) ? $options["page"] : 0);
+        $total_records      = isset($_POST['total_records']) ? $_POST['total_records'] : (isset($options["total_records"]) ? $options["page"] : 0);
         $pagination         = isset($options["pagination"]) ? $options["pagination"] : 'YES';
         
         $order              = isset($options["order"]) ? $options["order"] : "";
@@ -71,10 +71,10 @@ class DynaList
         $sort_type          = isset($_POST['sort-type']) ? $_POST['sort-type'] : "";
         
         $mainData = array(
-             "page-size"       => $page_size
+             "page_size"       => $page_size
             ,"page"            => $page
-            ,"total-records"   => $total_records
-            ,"return-data"     => $return_data
+            ,"total_records"   => $total_records
+            ,"return_data"     => $return_data
             ,"data"            => array()
         );
         
@@ -82,7 +82,7 @@ class DynaList
         
         try{
             if(!isset($options['select']) || trim($options['select']) == "" || !isset($options['from']) || trim($options['from']) == "" ){
-                throw new Exception("Select OR From clause is missing.");
+                throw new EasyList_Exception("Select OR From clause is missing.");
             } else {
                 $select = "SELECT " . $options['select'];
                 $sql .= " FROM " . $options['from'];
@@ -125,12 +125,15 @@ class DynaList
                 //Start : Pagination section 
                 if($pagination == "YES"){
                     if($total_records == 0){
-                        
-                        $stmt = self::$connection->prepare("SELECT COUNT(*) AS count FROM (SELECT 1 " . $count_sql . ") AS query");
-                        $stmt->execute();
-                        $rec = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                        $mainData["total-records"] = $total_records = ($rec["count"]) ? $rec["count"] : 0;
+                        try{
+                            $stmt = self::$connection->prepare("SELECT COUNT(*) AS count FROM (SELECT 1 " . $count_sql . ") AS query");
+                            $stmt->execute();
+                            $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+                            
+                            $mainData["total_records"] = $total_records = ($rec["count"]) ? $rec["count"] : 0;
+                        }catch(Exception $e){
+                            throw new EasyList_Exception("Error in count query : " . $e-getMessage());
+                        }
                     }
                     
                     $total_records_pages = intval(ceil($total_records / $page_size));
@@ -138,16 +141,20 @@ class DynaList
                     $prev_page = ($page == 1) ? 1 : $page - 1;
                     $offset    = ($page - 1) * $page_size;
                     
-                    $mainData["next-page"] = $next_page;
-                    $mainData["prev-page"] = $prev_page;
+                    $mainData["next_page"] = $next_page;
+                    $mainData["prev_page"] = $prev_page;
                     
                     $sql .= " LIMIT {$offset},{$page_size}";
                 }
                 //End : Pagination section
                 
-                $stmt = self::$connection->prepare($select . $sql);
-                $stmt->execute();
-                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                try{
+                    $stmt = self::$connection->prepare($select . $sql);
+                    $stmt->execute();
+                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                }catch(Exception $e){
+                    throw new EasyList_Exception("Error in the query : " . $e-getMessage());
+                }
             }
             
             //Handling return data
@@ -168,14 +175,14 @@ class DynaList
                     break;
 
                 case 'QUERY' :
-                    unset($mainData["page-size"]);
+                    unset($mainData["page_size"]);
                     unset($mainData["page"]);
-                    unset($mainData["total-records"]);
-                    unset($mainData["return-data"]);
+                    unset($mainData["total_records"]);
+                    unset($mainData["return_data"]);
                     unset($mainData["data"]);
                     
                     $mainData["query"] = $select . $sql;
-                    $mainData["count-query"] = "SELECT COUNT(*) AS count FROM (SELECT 1 " . $sql . ") AS query";
+                    $mainData["count_query"] = "SELECT COUNT(*) AS count FROM (SELECT 1 " . $sql . ") AS query";
                     $viewData = "";
                     break;
             }
@@ -185,7 +192,8 @@ class DynaList
             $conn = NULL;
             
         } catch(Exception $e){
-            //throw new Exception($e-getMessage());
+            $mainData["data"] = array("message" => $e-getMessage());
+            return json_encode($mainData);
         }
         
         return json_encode($mainData);
@@ -265,9 +273,9 @@ class DynaList
             $postVariable = !isset($eachfilter['form-field']) ? "" : (isset($_POST[$eachfilter['form-field']]) ? $_POST[$eachfilter['form-field']] : "");
             $operation = isset($eachfilter['operation']) ? $eachfilter['operation'] : "";
             $type = isset($eachfilter['type']) ? trim(strtoupper($eachfilter['type'])) : "STRING";
-            $dateFormatFrom = isset($eachfilter['datetime-format-from']) ? trim($eachfilter['datetime-format-from']) : "Y-m-d";
-            $dateFormatTo = isset($eachfilter['datetime-format-to']) ? trim($eachfilter['datetime-format-to']) : "Y-m-d";
-            $emoty_consider = isset($eachfilter['consider-empty']) ? trim(strtoupper($eachfilter['consider-empty'])) : "NO";
+            $dateFormatFrom = isset($eachfilter['datetime_format_from']) ? trim($eachfilter['datetime_format_from']) : "Y-m-d";
+            $dateFormatTo = isset($eachfilter['datetime_format_to']) ? trim($eachfilter['datetime_format_to']) : "Y-m-d";
+            $emoty_consider = isset($eachfilter['consider_empty']) ? trim(strtoupper($eachfilter['consider_empty'])) : "NO";
             
             if($condition && ($postVariable || $emoty_consider == "NO")){
                 $clean_filter = self::CeanQuotes($condition);
@@ -295,9 +303,8 @@ class DynaList
                             $new_date = $dateObj->format($dateFormatTo);
                             $subfilter .= "'{$new_date}'";
                         } else {
-                            $subfilter .= "''"; //:TODO Throw error
-                            //$subValues = date($dateFormatTo, strtotime($postVariable));
-                            //$subfilter .= "'{$subValues}'";
+                            throw new EasyList_Exception("Date not matching with the 'datetime_format_from'. ");
+                            $subfilter .= "''"; 
                         }
                         break;
                     case 'STRING' :
@@ -358,13 +365,13 @@ class DynaList
     public static function List($config)
     {
         if(!array_key_exists($config['column'], $config)){
-            $config['column'] = array_map(function($obj){ $obj['sort'] = trim(base64_encode($obj['sort'])); return $obj; }, $config['column']);
+            $config['column'] = array_map(function($obj){ $obj['sort'] = base64_encode(trim($obj['sort'])); return $obj; }, $config['column']);
         }
         
         $config = rawurlencode(str_replace('null', '""', json_encode($config)));
         
-        echo '<input type="hidden" name="easylist-config" id="easylist-config" value=\''.$config.'\' />';
+        echo '<input type="text" id="easylist-config" value=\''.$config.'\' />
+             <div class="text-center" id="div-list-render"></div>';
     }
-    
     
 }
