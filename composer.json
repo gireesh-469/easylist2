@@ -6,7 +6,7 @@
         "psr-4": {
             "Easylist\\Easylist2\\": "src"
         },
-        "classmap": ["src/*/"]
+        "classmap": ["src/"]
     },
     "minimum-stability": "dev",
     "require": {}
