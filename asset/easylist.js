@@ -24,10 +24,15 @@ $(document).ready(function(){
 				dataType : 'json',
 				data : $('#'+form).serialize().replace(/%5B%5D/g,'[]'),
 				success : function(response) {
-					var table  	 = '<table class="table table-condensed table-hover tank-core-table">';
-					table 		+= generateWidgetHeader(header.column);
-					table   	+= generateWidgetTable(response);
-					table  		+= "</table>";
+					var table = "";
+					if(response.return_data == 'HTML'){
+						table = response.data;
+					} else {
+						table 	 	 = '<table class="table table-condensed table-hover tank-core-table">';
+						table 		+= generateWidgetHeader(header.column);
+						table   	+= generateWidgetTable(response);
+						table  		+= "</table>";
+					}
 					$('#'+header.targer_div_id).html(table);
 					widgetPagination(response);
 				},
@@ -158,16 +163,7 @@ function displayPaginationHTML(json_data){
 	var next_page = json_data.next_page;
 	var prev_page = json_data.prev_page;
 	
-	
-	/*
-	var total_pages = parseInt(Math.ceil(total_count/page_size));
-	var start_page = total_count == 0 ? 0 : 1;
-	var min = (current_page - 1) * page_size + start_page;
-	var max = min + total_pages - start_page;
-	var next_page = current_page === total_pages ? current_page : current_page + 1;
-	var prev_page = current_page == 1 ? 1 : current_page - 1;
-*/
-	
+
 	var html = `<div class="custom-pagination">
 					<a href="javascript:void(0)" class="first-page enabled" title="First" data-page="1">
       					<span class="glyphicon glyphicon-step-backward"></span>

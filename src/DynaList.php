@@ -176,7 +176,6 @@ class DynaList
                     ob_start();
                     require $options["view"];
                     $viewData = ob_get_clean();
-                    $viewData = json_encode(html_entity_decode($viewData)); //, JSON_UNESCAPED_SLASHES
                 } else {
                     $viewData = "";
                 }
