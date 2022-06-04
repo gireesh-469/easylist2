@@ -27,31 +27,34 @@ class DynaList
     
     /**
      * @param array $options
-     * $options array : select, joins, from, conditions, group, having, limit, offset, order 
+     * $options array 
      * array(
-         "select" 	=> "<Comma separated column list>"
-        ,"from" 	=> "<From table with alias>"
-        ,"joins" 	=> "<Join statements>"
-        ,"conditions" => array(
-        			array("condition" => "name = ?", "value" => "<FILTER-NAME>", "operation" => "AND" ),
-        			array("condition" => "age = ?", "value" => "<FILTER-AGE>", "operation" => "OR" ),
-        			array("condition" => "(name = ? AND age IN( ?) )", "value" => array(<FILTER-NAME>, <ARRAY-FILTER-AGE->)), "operation" => "OR" )
-        		)
-        ,"group" 	=> "<Comma separated group names>"
-        ,"having" 	=> array(
-        			array("condition" => "name = ?", "value" => "<FILTER-NAME>", "operation" => "AND" ),
-        			array("condition" => "age = ?", "value" => "<FILTER-NAME>", "operation" => "OR" )
-        		)
-       ,"filter" => array( //Either filter of condition will be condier
-            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|TIME|INTEGER|STRING", "datetime_format_from"=>"d/m/Y : Use php date format", "datetime_format_to"=>"d/m/Y", "consider_empty" => "YES|NO : Default - NO"),
-            array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING", "datetime_format_from"=>"d/m/Y : Use php date format", "datetime_format_to"=>"PHP date format d/m/Y", "consider_empty" => "YES|NO : Default - NO"),
-            )
-        ,"order" 	=> "<Comma separated order coluns with ASC/DESC key >"
-        ,"return_data" => "<HTML / JSON / QUERY>"
-        ,"view"	    => "<view location if return_data is HTML>"
-        ,"page" 	=> "<page number>"
-        ,"pagination" 	=> "YES | NO"
-        ,"page_size" => "<page size>"
+         "select" 	             => "<Comma separated column list>"
+        ,"from" 	             => "<From table with alias>"
+        ,"joins" 	             => "<Join statements>"
+        ,"conditions"            => array(
+                        			array("condition" => "name = ?", "value" => "<FILTER-NAME>", "operation" => "AND" ),
+                        			array("condition" => "age = ?", "value" => "<FILTER-AGE>", "operation" => "OR" ),
+                        			array("condition" => "(name = ? AND age IN( ?) )", "value" => array(<FILTER-NAME>, <ARRAY-FILTER-AGE->)), "operation" => "OR" )
+                        		  )
+        ,"group" 	             => "<Comma separated group names>"
+        ,"having" 	             => array(
+                        			array("condition" => "name = ?", "value" => "<FILTER-NAME>", "operation" => "AND" ),
+                        			array("condition" => "age = ?", "value" => "<FILTER-NAME>", "operation" => "OR" )
+                        		  )
+        ,"having_columns"        => "<Comma separated list of columns used in HAVING cluase. This is to prevent count query error when HAVING is used>"                         		  
+                        		  //Note : Either filter or condition will be considered
+       ,"filter"                 => array( 
+                                    array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|TIME|INTEGER|STRING", "datetime_format_from"=>"d/m/Y : Use php date format", "datetime_format_to"=>"d/m/Y", "consider_empty" => "YES|NO : Default - NO"),
+                                    array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING", "datetime_format_from"=>"d/m/Y : Use php date format", "datetime_format_to"=>"PHP date format d/m/Y", "consider_empty" => "YES|NO : Default - NO"),
+                                  )
+        ,"order" 	             => "<Comma separated order coluns with ASC/DESC key >"
+        ,"return_data"           => "<HTML / JSON / QUERY>"
+        ,"view"	                 => "<view location if return_data is HTML>"
+        ,"view_variables"        => array("variable"=>"$variableName" [...])
+        ,"page" 	             => "<page number>"
+        ,"pagination" 	         => "YES | NO - Default Yes"
+        ,"page_size"             => "<page size>"
        )
      */
     public static function Page($options)
@@ -68,6 +71,7 @@ class DynaList
         $page               = isset($_POST['page']) ? $_POST['page'] : (isset($options["page"]) ? $options["page"] : 1);
         $total_records      = isset($_POST['total_records']) ? $_POST['total_records'] : (isset($options["total_records"]) ? $options["page"] : 0);
         $pagination         = isset($options["pagination"]) ? $options["pagination"] : 'YES';
+        $having_columns     = isset($options["having_columns"]) ? "," . trim($options["having_columns"],",") : '';
         
         $order              = isset($options["order"]) ? $options["order"] : "";
         $sort               = isset($_POST['sort']) ? $_POST['sort'] : "";
@@ -80,6 +84,7 @@ class DynaList
             ,"next_page"       => 1
             ,"prev_page"       => 1
             ,"last_page"       => 1
+            ,"total_pages"     => 1 
             ,"return_data"     => $return_data
             ,"data"            => array()
         );
@@ -131,7 +136,7 @@ class DynaList
             if($pagination == "YES"){
                 if($total_records == 0){
                     try{
-                        $stmt = self::$connection->prepare("SELECT COUNT(*) AS count FROM (SELECT 1 " . $count_sql . ") AS query");
+                        $stmt = self::$connection->prepare("SELECT COUNT(*) AS count {$having_columns} FROM (SELECT 1 " . $count_sql . ") AS query");
                         $stmt->execute();
                         $rec = $stmt->fetch(PDO::FETCH_ASSOC);
                         
@@ -141,14 +146,15 @@ class DynaList
                     }
                 }
                 
-                $total_records_pages = intval(ceil($total_records / $page_size));
-                $next_page = ($page === $total_records_pages) ? $page : $page + 1;
+                $total_pages = intval(ceil($total_records / $page_size));
+                $next_page = ($page === $total_pages) ? $page : $page + 1;
                 $prev_page = ($page == 1) ? 1 : $page - 1;
                 $offset    = ($page - 1) * $page_size;
                 
                 $mainData["next_page"] = $next_page;
                 $mainData["prev_page"] = $prev_page;
-                $mainData["last_page"] = $total_records_pages;
+                $mainData["last_page"] = $total_pages;
+                $mainData["total_pages"] = $total_pages;
                 
                 $sql .= " LIMIT {$offset},{$page_size}";
             }
@@ -188,7 +194,7 @@ class DynaList
                 unset($mainData["data"]);
                 
                 $mainData["query"] = $select . $sql;
-                $mainData["count_query"] = "SELECT COUNT(*) AS count FROM (SELECT 1 " . $sql . ") AS query";
+                $mainData["count_query"] = "SELECT COUNT(*) AS count  {$having_columns} FROM (SELECT 1 " . $sql . ") AS query";
                 $viewData = "";
                 break;
         }
@@ -371,8 +377,7 @@ class DynaList
         
         $config = rawurlencode(str_replace('null', '""', json_encode($config)));
         
-        echo '<input type="text" id="easylist-config" value=\''.$config.'\' />
-             <div class="text-center" id="div-list-render"></div>';
+        echo '<input type="text" id="easylist-config" value=\''.$config.'\' />';
     }
     
 }

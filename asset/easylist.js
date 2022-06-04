@@ -17,7 +17,7 @@ $(document).ready(function(){
 	function getCoreData(){
 		if(isHeaderObjectExist("column")){
 			var url = header.url;
-			form = header.formid;
+			form = header.form_id;
 			$.ajax({
 				type : 'POST',
 				url : url,
@@ -28,7 +28,7 @@ $(document).ready(function(){
 					table 		+= generateWidgetHeader(header.column);
 					table   	+= generateWidgetTable(response);
 					table  		+= "</table>";
-					$('#div-list-render').html(table);
+					$('#'+header.targer_div_id).html(table);
 					widgetPagination(response);
 				},
 				error : function(response) {
@@ -130,10 +130,11 @@ $(document).ready(function(){
 
 // });
 
-var form = 'address';
+//var form = 'address';
+	
 function widgetPagination(json_data){
 	if(json_data){
-		displayPaginationHTML(json_data.total_records, json_data.page_size, json_data.page);
+		displayPaginationHTML(json_data);
 	}
 }
 
@@ -145,14 +146,28 @@ function isJsonObject(json_data) {
 	}
 }
 
-function displayPaginationHTML(total_count, page_size, current_page){
+function displayPaginationHTML(json_data){
+
+	var total_count = json_data.total_records;
+	var current_page = json_data.page;
+	var page_size = json_data.page_size;
+	var total_pages = json_data.total_pages;
+	var start_page = total_count == 0 ? 0 : 1;
+	var min = (current_page - 1) * page_size + start_page;
+	var max = min + total_pages - start_page;
+	var next_page = json_data.next_page;
+	var prev_page = json_data.prev_page;
+	
+	
+	/*
 	var total_pages = parseInt(Math.ceil(total_count/page_size));
 	var start_page = total_count == 0 ? 0 : 1;
 	var min = (current_page - 1) * page_size + start_page;
 	var max = min + total_pages - start_page;
 	var next_page = current_page === total_pages ? current_page : current_page + 1;
 	var prev_page = current_page == 1 ? 1 : current_page - 1;
-
+*/
+	
 	var html = `<div class="custom-pagination">
 					<a href="javascript:void(0)" class="first-page enabled" title="First" data-page="1">
       					<span class="glyphicon glyphicon-step-backward"></span>
@@ -179,15 +194,15 @@ function displayPaginationHTML(total_count, page_size, current_page){
   				</div>`;
 	if(header.pager == 'TOP'){
 		$('.custom-pagination').remove();
-		$('#div-list-render').prepend(html);
+		$('#' + header.targer_div_id).prepend(html);
 	}else if(header.pager == 'BOTTOM'){
 		$('.custom-pagination').remove();
-		$('#div-list-render').append(html);
+		$('#' + header.targer_div_id).append(html);
 	}
 	else{
 		$('.custom-pagination').remove();
-		$('#div-list-render').prepend(html);
-		$('#div-list-render').append(html);
+		$('#' + header.targer_div_id).prepend(html);
+		$('#' + header.targer_div_id).append(html);
 	}
 }
 
