@@ -19,8 +19,10 @@ class DynaList
      */
     public static function Connection()
     {
-        $conn = new ListConnection();
-        self::$connection = $conn->setConnection();
+        if(!self::$connection){
+            $conn = new ListConnection();
+            self::$connection = $conn->setConnection();
+        } 
     }
     
     /**
@@ -84,122 +86,116 @@ class DynaList
         
         $data = array();
         
-        try{
-            if(!isset($options['select']) || trim($options['select']) == "" || !isset($options['from']) || trim($options['from']) == "" ){
-                throw new EasyListException("Select OR From clause is missing.");
-            } else {
-                $select = "SELECT " . $options['select'];
-                $sql .= " FROM " . $options['from'];
-            }
-            
-            if(isset($options['joins']) && $options['joins'] !=""){
-                $sql .= $options['joins'];
-            }
-            
-            //Condtion option will not consider if Filter option is present
-            if(isset($options['filter']) && is_array($options['filter'])){
-                $subCondition = self::ConditionBuilderForFilter($options['filter']);
-                $sql .= " WHERE " .  $subCondition;
-            } elseif(isset($options['conditions']) && $options['conditions'] !=""){
-                $subCondition = self::ConditionBuilder($options['conditions']);
-                $sql .= " WHERE " .  $subCondition;
-            }
-            
-            if(isset($options['group']) && $options['group'] !=""){
-                $sql .= " GROUP BY " .  $options['group'];
-            }
-            
-            if(isset($options['having']) && $options['having'] !=""){
-                $subCondition = self::ConditionBuilder($options['having']);
-                $sql .=  " HAVING " . $subCondition;
-            }
-            
-            //Count query - No order clause requred
-            $count_sql = $sql;
-            
-            if($sort != ""){
-                $sql .=  " ORDER BY " . self::Decode($sort) . " $sort_type ";
-            } elseif($order != ""){
-                $sql .=  " ORDER BY " . $options['order'];
-            }
-            
-            if($return_data != "QUERY"){
-                self::Connection();
-                
-                //Start : Pagination section 
-                if($pagination == "YES"){
-                    if($total_records == 0){
-                        try{
-                            $stmt = self::$connection->prepare("SELECT COUNT(*) AS count FROM (SELECT 1 " . $count_sql . ") AS query");
-                            $stmt->execute();
-                            $rec = $stmt->fetch(PDO::FETCH_ASSOC);
-                            
-                            $mainData["total_records"] = $total_records = ($rec["count"]) ? $rec["count"] : 0;
-                        }catch(Exception $e){
-                            throw new EasyListException("Error in count query : " . $e->getMessage());
-                        }
-                    }
-                    
-                    $total_records_pages = intval(ceil($total_records / $page_size));
-                    $next_page = ($page === $total_records_pages) ? $page : $page + 1;
-                    $prev_page = ($page == 1) ? 1 : $page - 1;
-                    $offset    = ($page - 1) * $page_size;
-                    
-                    $mainData["next_page"] = $next_page;
-                    $mainData["prev_page"] = $prev_page;
-                    $mainData["last_page"] = $total_records_pages;
-                    
-                    $sql .= " LIMIT {$offset},{$page_size}";
-                }
-                //End : Pagination section
-                
-                try{
-                    $stmt = self::$connection->prepare($select . $sql);
-                    $stmt->execute();
-                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                }catch(Exception $e){
-                    throw new EasyListException("Error in the query : " . $e->getMessage());
-                }
-            }
-            
-            //Handling return data
-            switch($return_data){
-                case 'HTML' :
-                    if(isset($options["view"]) && $options["view"] != ""){
-                        ob_start();
-                        require $options["view"];
-                        $viewData = ob_get_clean();
-                        $viewData = json_encode($viewData); //, JSON_UNESCAPED_SLASHES
-                    } else {
-                        $viewData = "";
-                    }
-                    break;
-
-                case 'JSON' :
-                    $viewData = $data;
-                    break;
-
-                case 'QUERY' :
-                    unset($mainData["page_size"]);
-                    unset($mainData["page"]);
-                    unset($mainData["total_records"]);
-                    unset($mainData["return_data"]);
-                    unset($mainData["data"]);
-                    
-                    $mainData["query"] = $select . $sql;
-                    $mainData["count_query"] = "SELECT COUNT(*) AS count FROM (SELECT 1 " . $sql . ") AS query";
-                    $viewData = "";
-                    break;
-            }
-        
-            $mainData["data"] = $viewData;
-            
-            $conn = NULL;
-            
-        } catch(Exception $e){
-            $mainData["data"] = array("message" => $e->getMessage());
-            return json_encode($mainData);
+        if(!isset($options['select']) || trim($options['select']) == "" || !isset($options['from']) || trim($options['from']) == "" ){
+            throw new EasyListException("Select OR From clause is missing.");
+        } else {
+            $select = "SELECT " . $options['select'];
+            $sql .= " FROM " . $options['from'];
         }
+        
+        if(isset($options['joins']) && $options['joins'] !=""){
+            $sql .= $options['joins'];
+        }
+        
+        //Condtion option will not consider if Filter option is present
+        if(isset($options['filter']) && is_array($options['filter'])){
+            $subCondition = self::ConditionBuilderForFilter($options['filter']);
+            $sql .= " WHERE " .  $subCondition;
+        } elseif(isset($options['conditions']) && $options['conditions'] !=""){
+            $subCondition = self::ConditionBuilder($options['conditions']);
+            $sql .= " WHERE " .  $subCondition;
+        }
+        
+        if(isset($options['group']) && $options['group'] !=""){
+            $sql .= " GROUP BY " .  $options['group'];
+        }
+        
+        if(isset($options['having']) && $options['having'] !=""){
+            $subCondition = self::ConditionBuilder($options['having']);
+            $sql .=  " HAVING " . $subCondition;
+        }
+        
+        //Count query - No order clause requred
+        $count_sql = $sql;
+        
+        if($sort != ""){
+            $sql .=  " ORDER BY " . self::Decode($sort) . " $sort_type ";
+        } elseif($order != ""){
+            $sql .=  " ORDER BY " . $options['order'];
+        }
+        
+        if($return_data != "QUERY"){
+            self::Connection();
+            
+            //Start : Pagination section 
+            if($pagination == "YES"){
+                if($total_records == 0){
+                    try{
+                        $stmt = self::$connection->prepare("SELECT COUNT(*) AS count FROM (SELECT 1 " . $count_sql . ") AS query");
+                        $stmt->execute();
+                        $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+                        
+                        $mainData["total_records"] = $total_records = ($rec["count"]) ? $rec["count"] : 0;
+                    }catch(Exception $e){
+                        throw new EasyListException("Error in count query : " . $e->getMessage());
+                    }
+                }
+                
+                $total_records_pages = intval(ceil($total_records / $page_size));
+                $next_page = ($page === $total_records_pages) ? $page : $page + 1;
+                $prev_page = ($page == 1) ? 1 : $page - 1;
+                $offset    = ($page - 1) * $page_size;
+                
+                $mainData["next_page"] = $next_page;
+                $mainData["prev_page"] = $prev_page;
+                $mainData["last_page"] = $total_records_pages;
+                
+                $sql .= " LIMIT {$offset},{$page_size}";
+            }
+            //End : Pagination section
+            
+            try{
+                $stmt = self::$connection->prepare($select . $sql);
+                $stmt->execute();
+                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }catch(Exception $e){
+                throw new EasyListException("Error in the query : " . $e->getMessage());
+            }
+        }
+        
+        //Handling return data
+        switch($return_data){
+            case 'HTML' :
+                if(isset($options["view"]) && $options["view"] != ""){
+                    ob_start();
+                    require $options["view"];
+                    $viewData = ob_get_clean();
+                    $viewData = json_encode($viewData); //, JSON_UNESCAPED_SLASHES
+                } else {
+                    $viewData = "";
+                }
+                break;
+
+            case 'JSON' :
+                $viewData = $data;
+                break;
+
+            case 'QUERY' :
+                unset($mainData["page_size"]);
+                unset($mainData["page"]);
+                unset($mainData["total_records"]);
+                unset($mainData["return_data"]);
+                unset($mainData["data"]);
+                
+                $mainData["query"] = $select . $sql;
+                $mainData["count_query"] = "SELECT COUNT(*) AS count FROM (SELECT 1 " . $sql . ") AS query";
+                $viewData = "";
+                break;
+        }
+    
+        $mainData["data"] = $viewData;
+        
+        $conn = NULL;
         
         return json_encode($mainData);
     }

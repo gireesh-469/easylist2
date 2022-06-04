@@ -22,27 +22,34 @@ class ListConnection
     public $dsn_protocol;// newly added
     public $ids_server;// newly added
     
-    public function __construct($db = NULL){
-        if($db == NULL){
-            try{
-                require('app/config/EasyListConfig.php');
-            } catch(Exception $e){
-                throw new EasyListException("Please configure DB at 'app/config/EasyListConfig.php'. Refer sample file at plugin's 'config' folder.");
-            }            
-        }
+    public function __construct(){
         
-        $this->host        = $db['host'];
-        $this->username    = $db['username'];
-        $this->password    = $db['password'];
-        $this->database    = $db['database'];
-        $this->protocol    = trim(strtoupper($db['protocol']));
-        $this->port        = (!empty($db['port'])) ? $db['port'] : null;//newly added
-        $this->dsn_service = (!empty($db['dsn_service'])) ? $db['dsn_service'] : null;//newly added
-        $this->dsn_protocol= (!empty($db['dsn_protocol'])) ? $db['dsn_protocol'] : null;//newly added
-        $this->ids_server  = (!empty($db['ids_server'])) ? $db['ids_server'] : null;//newly added
+        $path = realpath(dirname(__FILE__)) . '/../config/EasyListConfig.php';
+        require($path);
+        
+        if(isset($configPath)){
+            if(file_exists($configPath)){
+                require($configPath);
+            } else {
+                throw new EasyListException("Please configure DB at '{$configPath}'. Refer sample file at plugin's 'config' folder.");
+            }
+            
+            $this->host        = $db['host'];
+            $this->username    = $db['username'];
+            $this->password    = $db['password'];
+            $this->database    = $db['database'];
+            $this->protocol    = trim(strtoupper($db['protocol']));
+            $this->port        = (!empty($db['port'])) ? $db['port'] : null;
+            $this->dsn_service = (!empty($db['dsn_service'])) ? $db['dsn_service'] : null;
+            $this->dsn_protocol= (!empty($db['dsn_protocol'])) ? $db['dsn_protocol'] : null;
+            $this->ids_server  = (!empty($db['ids_server'])) ? $db['ids_server'] : null;
+        } else {
+            throw new EasyListException("Configuration file 'config/EasyListConfig.php' is missing in EasyList root directory");
+        }
     }
     
     public function setConnection(){
+        
         try {
             switch($this->protocol){
                 case 'MYSQL':
@@ -74,15 +81,12 @@ class ListConnection
                 $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 return $this->conn;
             }else{
-                throw new Exception("Unable to connect due to wrong credentials");
+                throw new EasyListException("Unable to connect due to wrong credentials");
             }
             
         } catch(PDOException $e) {
-            $this->printDbMesasage("Connection failed: " . $e->getMessage());
+            throw new EasyListException("Connection failed: " . $e->getMessage());
         }
     }
     
-    private function printDbMesasage($msg){
-        echo $msg;
-    }
 }
