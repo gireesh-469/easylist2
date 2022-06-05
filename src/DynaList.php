@@ -107,10 +107,14 @@ class DynaList
         //Condtion option will not consider if Filter option is present
         if(isset($options['filters']) && is_array($options['filters'])){
             $subCondition = self::ConditionBuilderForFilter($options['filters']);
-            $sql .= " WHERE " .  $subCondition;
+            if(trim($subCondition) != ""){
+                $sql .= " WHERE " .  $subCondition;
+            }
         } elseif(isset($options['conditions']) && $options['conditions'] !=""){
             $subCondition = self::ConditionBuilder($options['conditions']);
-            $sql .= " WHERE " .  $subCondition;
+            if(trim($subCondition) != ""){
+                $sql .= " WHERE " .  $subCondition;
+            }
         }
         
         if(isset($options['group']) && $options['group'] !=""){
@@ -130,7 +134,7 @@ class DynaList
         } elseif($order != ""){
             $sql .=  " ORDER BY " . $options['order'];
         }
-        
+
         if($return_data != "QUERY"){
             self::Connection();
             
@@ -143,6 +147,7 @@ class DynaList
                         $rec = $stmt->fetch(PDO::FETCH_ASSOC);
                         
                         $mainData["total_records"] = $total_records = ($rec["count"]) ? $rec["count"] : 0;
+
                     }catch(Exception $e){
                         throw new EasyListException("Error in count query : " . $e->getMessage());
                     }
@@ -162,7 +167,9 @@ class DynaList
                 $mainData["last_page"] = $total_pages;
                 $mainData["total_pages"] = $total_pages;
                 
-                $sql .= " LIMIT {$offset},{$page_size}";
+                if($total_pages > 0){
+                    $sql .= " LIMIT {$offset},{$page_size}";
+                }
             }
             //End : Pagination section
             
@@ -291,9 +298,9 @@ class DynaList
             $type = isset($eachfilter['type']) ? trim(strtoupper($eachfilter['type'])) : "STRING";
             $dateFormatFrom = isset($eachfilter['datetime_format_from']) ? trim($eachfilter['datetime_format_from']) : "Y-m-d";
             $dateFormatTo = isset($eachfilter['datetime_format_to']) ? trim($eachfilter['datetime_format_to']) : "Y-m-d";
-            $emoty_consider = isset($eachfilter['consider_empty']) ? trim(strtoupper($eachfilter['consider_empty'])) : "NO";
+            $empty_consider = isset($eachfilter['consider_empty']) ? trim(strtoupper($eachfilter['consider_empty'])) : "NO";
             
-            if($condition && ($postVariable || $emoty_consider == "NO")){
+            if($condition && ($postVariable || $empty_consider == "YES")){
                 $clean_filter = self::CeanQuotes($condition);
                 $ary_subfilter = explode("?", $clean_filter);
                 
