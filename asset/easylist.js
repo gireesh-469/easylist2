@@ -5,6 +5,13 @@ $(document).ready(function(){
 
 	function getConfiguration(type=''){
 		header = isJsonObject(decodeURIComponent($('#easylist-config').val()));
+		
+		form = header.form_id;
+		addUpdateHiddenField('page_size', 25, form);
+		addUpdateHiddenField('page', 1, form);
+		addUpdateHiddenField('sort', '', form);
+		addUpdateHiddenField('sort_type', '', form);
+	
 		if(header && header.autolist == true){
 			getCoreData();
 		}
@@ -206,12 +213,7 @@ function displayPaginationHTML(json_data){
 $(document).on('click', '.first-page, .last-page, .next-page, .prev-page', function(e){
 	e.preventDefault();
 	var page_number = $(this).data('page');
-	if($('#'+form).find('#page').length > 0){
-		$('#'+form).find('#page').val(page_number);
-	}
-	else{
-		addHiddenField('page', page_number, form)	
-	}
+	addUpdateHiddenField('page', page_number, form);
 	getCoreData();
 });
 
@@ -219,29 +221,25 @@ $(document).on('click', '.first-page, .last-page, .next-page, .prev-page', funct
 $(document).on('change', '.page-limit', function(e){
 	e.preventDefault();
 	var page_size = $(this).val();
-	if($('#'+form).find('#page-size').length > 0){
-		$('#'+form).find('#page-size').val(page_size);
-	}
-	else{
-		addHiddenField('page-size', page_size, form);
-	}
-
-	if($('#'+form).find('#page').length > 0){
-		$('#'+form).find('#page').val(0);
-	}
-	else{
-		addHiddenField('page', 0, form)
-	}
+	
+	addUpdateHiddenField('page_size', page_size, form);
+	addUpdateHiddenField('page', 1, form);
+	
 	getCoreData();
 });
 
-function addHiddenField(name, value, form){
-	$("<input>").attr({
-		name: name,
-		id: name,
-		type: "hidden",
-		value: value
-	}).appendTo('#'+form);
+function addUpdateHiddenField(name, value, form){
+	
+	if($('#'+form).find('#'+name).length <= 0){
+		$("<input>").attr({
+			name: name,
+			id: name,
+			type: "hidden",
+			value: value
+		}).appendTo('#'+form);
+	} else {
+		$('#'+form).find('#'+name).val(value);
+	}
 }
 
 $(document).on('click', '.sortClass', function(){
@@ -249,21 +247,19 @@ $(document).on('click', '.sortClass', function(){
 	// $(this).parent('th').addClass('sortClass-th');
 	var sort = $(this).attr('data-sort');
 	var sort_type = $(this).attr('data-sort-type');
-	if($('#'+form).find('#sort').length == 0){
-		addHiddenField('sort', '', form);
-	}
-	if($('#'+form).find('#sort-type').length == 0){
-		addHiddenField('sort-type', '', form);
-	}
 
+	$('#'+form).find('#page').val(1);
+	
 	if($('#'+form).find('#sort').val() == sort){
-	  	if($('#'+form).find('#sort-type').val() == 'asc')
-	  		$('#'+form).find('#sort-type').val('desc');
-	  	else
-	  		$('#'+form).find('#sort-type').val('asc');
+	  	if($('#'+form).find('#sort_type').val() == 'asc'){
+	  		$('#'+form).find('#sort_type').val('desc');
+	  	}
+	  	else {
+	  		$('#'+form).find('#sort_type').val('asc');
+	  	}
 	}else{
 		$('#'+form).find('#sort').val(sort);
-		$('#'+form).find('#sort-type').val(sort_type);
+		$('#'+form).find('#sort_type').val(sort_type);
 	}
 	getCoreData();
 });

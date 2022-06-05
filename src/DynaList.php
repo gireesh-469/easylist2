@@ -75,7 +75,7 @@ class DynaList
         
         $order              = isset($options["order"]) ? $options["order"] : "";
         $sort               = isset($_POST['sort']) ? $_POST['sort'] : "";
-        $sort_type          = isset($_POST['sort-type']) ? $_POST['sort-type'] : "";
+        $sort_type          = isset($_POST['sort_type']) ? $_POST['sort_type'] : "";
         
         $mainData = array(
              "page_size"       => $page_size
@@ -147,6 +147,10 @@ class DynaList
                 }
                 
                 $total_pages = intval(ceil($total_records / $page_size));
+                if($page >= $total_pages){
+                    $page = $total_pages;
+                }
+                
                 $next_page = ($page === $total_pages) ? $page : $page + 1;
                 $prev_page = ($page == 1) ? 1 : $page - 1;
                 $offset    = ($page - 1) * $page_size;
