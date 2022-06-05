@@ -49,13 +49,12 @@ class DynaList
                                     array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING", "datetime_format_from"=>"d/m/Y : Use php date format", "datetime_format_to"=>"PHP date format d/m/Y", "consider_empty" => "YES|NO : Default - NO"),
                                   )
         ,"order" 	             => "<Comma separated order coluns with ASC/DESC key >"
-        ,"return_data"           => "<HTML / JSON / QUERY>"
+        ,"return_data"           => "<HTML / JSON / OBJECT / QUERY>"
         ,"view"	                 => "<view location if return_data is HTML>"
         ,"view_variables"        => array("variable"=>"$variableName" [...])
         ,"page" 	             => "<page number>"
         ,"pagination" 	         => "YES | NO - Default Yes"
         ,"page_size"             => "<page size>"
-        ,"loading_type"          => "<AJAX | POSTBACK : Default AJAX. POSTBACK will provide data as object for developers to create his own pagination>"
        )
      */
     public static function Page($options)
@@ -73,7 +72,6 @@ class DynaList
         $total_records      = isset($_POST['total_records']) ? $_POST['total_records'] : (isset($options["total_records"]) ? $options["page"] : 0);
         $pagination         = isset($options["pagination"]) ? $options["pagination"] : 'YES';
         $having_columns     = isset($options["having_columns"]) ? "," . trim($options["having_columns"],",") : '';
-        $loading_type       = isset($options["loading_type"]) ? trim($options["loading_type"]) : 'AJAX';
         
         $order              = isset($options["order"]) ? $options["order"] : "";
         $sort               = isset($_POST['sort']) ? $_POST['sort'] : "";
@@ -195,6 +193,7 @@ class DynaList
                 break;
 
             case 'JSON' :
+            case 'OBJECT' :
                 $viewData = $data;
                 break;
 
@@ -212,11 +211,11 @@ class DynaList
         }
     
         $mainData["data"] = $viewData;
-        
-        if($loading_type != "POSTBACK"){
-            $mainData = json_encode($mainData,  JSON_INVALID_UTF8_IGNORE |  JSON_PARTIAL_OUTPUT_ON_ERROR);
-        } else {
+
+        if($return_data == "OBJECT"){
             $mainData = (object) $mainData;
+        } else {
+            $mainData = json_encode($mainData,  JSON_INVALID_UTF8_IGNORE |  JSON_PARTIAL_OUTPUT_ON_ERROR);
         }
         
         return $mainData;
