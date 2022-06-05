@@ -44,7 +44,7 @@ class DynaList
                         		  )
         ,"having_columns"        => "<Comma separated list of columns used in HAVING cluase. This is to prevent count query error when HAVING is used>"                         		  
                         		  //Note : Either filter or condition will be considered
-       ,"filter"                 => array( 
+       ,"filters"                 => array( 
                                     array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|TIME|INTEGER|STRING", "datetime_format_from"=>"d/m/Y : Use php date format", "datetime_format_to"=>"d/m/Y", "consider_empty" => "YES|NO : Default - NO"),
                                     array("condition" => "alias.Column-name = ?", "form-field" => "<INPUT ELEMENT NAME OF FORM>", "operation" => "AND|OR", "type"=>"BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING", "datetime_format_from"=>"d/m/Y : Use php date format", "datetime_format_to"=>"PHP date format d/m/Y", "consider_empty" => "YES|NO : Default - NO"),
                                   )
@@ -105,8 +105,8 @@ class DynaList
         }
         
         //Condtion option will not consider if Filter option is present
-        if(isset($options['filter']) && is_array($options['filter'])){
-            $subCondition = self::ConditionBuilderForFilter($options['filter']);
+        if(isset($options['filters']) && is_array($options['filters'])){
+            $subCondition = self::ConditionBuilderForFilter($options['filters']);
             $sql .= " WHERE " .  $subCondition;
         } elseif(isset($options['conditions']) && $options['conditions'] !=""){
             $subCondition = self::ConditionBuilder($options['conditions']);
