@@ -55,6 +55,7 @@ class DynaList
         ,"page" 	             => "<page number>"
         ,"pagination" 	         => "YES | NO - Default Yes"
         ,"page_size"             => "<page size>"
+        ,"loading_type"          => "<AJAX | POSTBACK : Default AJAX. POSTBACK will provide data as object for developers to create his own pagination>"
        )
      */
     public static function Page($options)
@@ -72,6 +73,7 @@ class DynaList
         $total_records      = isset($_POST['total_records']) ? $_POST['total_records'] : (isset($options["total_records"]) ? $options["page"] : 0);
         $pagination         = isset($options["pagination"]) ? $options["pagination"] : 'YES';
         $having_columns     = isset($options["having_columns"]) ? "," . trim($options["having_columns"],",") : '';
+        $loading_type       = isset($options["loading_type"]) ? trim($options["loading_type"]) : 'AJAX';
         
         $order              = isset($options["order"]) ? $options["order"] : "";
         $sort               = isset($_POST['sort']) ? $_POST['sort'] : "";
@@ -204,7 +206,13 @@ class DynaList
     
         $mainData["data"] = $viewData;
         
-        return json_encode($mainData,  JSON_INVALID_UTF8_IGNORE |  JSON_PARTIAL_OUTPUT_ON_ERROR);
+        if($loading_type != "POSTBACK"){
+            $mainData = json_encode($mainData,  JSON_INVALID_UTF8_IGNORE |  JSON_PARTIAL_OUTPUT_ON_ERROR);
+        } else {
+            $mainData = (object) $mainData;
+        }
+        
+        return $mainData;
     }
     
     /**
@@ -369,9 +377,33 @@ class DynaList
     
     /**
      * @param array $config
+     * * array(
+        "url"            => "<target location of controller/action function>",
+        'form_id'        => '<form id >',
+        'targer_div_id'  => '<div id where we want to show the output>',
+        'button_id'      => '<filter button id>',
+        "autolist"       => <true | false : If true will show the output first time without pressing button>,
+        "column"         => array( //Provide header detail
+                                array("head" => "Code", "column" => "a_code", "width" => '30%',"sort" => "a_code", "class" => "text-center"),
+                                array("head" => "Town", "column" => "a_town", "width" => '30%', "class" => "","sort" => "a_town"),
+                                array("head" => "Address", "column" => "a_state", "width" => '40%', "class" => "","sort" => "address")
+                           ),
+        "pager"          => "BOTH", //Location where we want to show the page controller 
+                            //Action colum where we can add edit/delete buttons 
+        "action"         => array("<a href='http://www.test.com/{a_country}/{name}/index'><span class='glyphicon glyphicon-pencil'></span></a>&nbsp;",
+                                "&nbsp;<a href='http://www.test.com/{id}/{name}/delete'><i style='color:red;font-size:20px;' class='fa fa-trash-o'></i></a>&nbsp;",
+                                '<a href="http://www.test.com/{xx}/view"><span style="font-size:20px;" class="fa fa-eye"></span></a>'
+                           )
+       )
      */
     public static function List($config)
     {
+        if(!array_key_exists("url", $config) || !array_key_exists("form_id", $config) || !array_key_exists("targer_div_id", $config) ||
+            !array_key_exists("button_id", $config) || !array_key_exists("column", $config) ||!array_key_exists("pager", $config))
+        {
+              throw new EasyListException("Required parameters missing. Check these parameter : url, form_id, targer_div_id, button_id, column, pager.");
+        }
+        
         if(!array_key_exists($config['column'], $config)){
             $config['column'] = array_map(function($obj){ $obj['sort'] = base64_encode(trim($obj['sort'])); return $obj; }, $config['column']);
         }
@@ -379,6 +411,48 @@ class DynaList
         $config = rawurlencode(str_replace('null', '""', json_encode($config)));
         
         echo '<input type="text" id="easylist-config" value=\''.$config.'\' />';
+    }
+    
+    /**
+     * @param array $page
+     * Description : Provide pager widget to developter to design his own control
+     */
+    public static function Pager($page, $page_sizes = null)
+    {
+        $start_page = $page->total_records == 0 ? 0 : 1;
+        $min = ($page->page - 1) * $page->page_size + $start_page;
+        $max = $min + $page->total_pages - $start_page;
+        $sizeOptions = "";
+        
+        if($page_sizes == null){
+            $page_sizes = array(10,25,50,100,250);
+        }
+        
+        foreach($page_sizes as $eachSize){
+            $selected = ($eachSize ==  $page->page_size) ? "selected" : "";
+            $sizeOptions .= "<option value='{$eachSize}' {$selected}>{$eachSize}</option>";
+        }
+        
+        $html = "<div class='custom-pagination'>
+					<a href='javascript:void(0)' class='first-page enabled' title='First' data-page='1'>
+      					<span class='glyphicon glyphicon-step-backward'></span>
+    				</a>
+    				<a href='javascript:void(0)' class='prev-page enabled' title='Previous' data-page='{$page->prev_page}'>
+      					<span class='glyphicon glyphicon-backward'></span>
+    				</a>
+    				<div class='pagedisplay'>
+      					Records {$min} to {$max} (Total {$page->total_records} Results) - Page {$page->page} of {$page->total_pages}
+    				</div>
+    				<a href='javascript:void(0)' class='next-page enabled' title='Next' data-page='{$page->next_page}'>
+      					<span class='glyphicon glyphicon-forward'></span>
+    				</a>
+    				<a href='javascript:void(0)' class='last-page enabled' title='Last' data-page='{$page->last_page}'>
+      					<span class='glyphicon glyphicon-step-forward'></span>
+    				</a>
+					<select class='page-limit'>{$sizeOptions}</select>
+  				</div>";
+        
+        echo $html;
     }
     
 }
