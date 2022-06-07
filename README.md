@@ -128,6 +128,7 @@ There are some parameters that needs to be given in the array. The params are me
 |condition|The condition which has to be included in the where clause|-|
 |value|The values which has to be added to the respective where clause|-|
 |operation|This option specifies which operation binds the condition to other consitions|AND/OR|
+
  **group**
   ```sh
   DynaList::Page(array(
@@ -187,7 +188,7 @@ There are some parameters that needs to be given in the array. The params are me
 |type|The type of the form-field|BOOLEAN/DATE/DATETIME/TIME/INTEGER/STRING.|
 |datetime_format_from|Date time format of th field|-|
 |datetime_format_to|The date time format to which the field value has to be converted|-|
-|consider_empty|If the option consider_empty is YES then the field's condition will be considered for the query created automatically otherwise it will be ruled out. By default this option's value is NO.|YES?NO|
+|consider_empty|If the option consider_empty is YES then the field's condition will be considered for the query created automatically otherwise it will be ruled out. By default this option's value is NO.|YES/NO|
 
  ``If both conditions and filters options are present filters will have more preference. ``
 
