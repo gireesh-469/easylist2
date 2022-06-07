@@ -218,6 +218,8 @@ class DynaList
             $mainData = json_encode($mainData,  JSON_INVALID_UTF8_IGNORE |  JSON_PARTIAL_OUTPUT_ON_ERROR);
         }
         
+        self::$connection = null;
+        
         return $mainData;
     }
     
@@ -457,7 +459,7 @@ class DynaList
     				</a>
 					<select class='page-limit'>{$sizeOptions}</select>
   				</div>";
-        
+
         echo $html;
     }
     
