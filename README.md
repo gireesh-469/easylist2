@@ -77,8 +77,8 @@ There are some parameters that needs to be given in the array. The params are me
 | joins  |  Join statements             |
 | conditions |  Array which consist of the conditions that has to be applied in the <Where> clause. Its to mention extra conditions other than filters |
 | group | Comma separated group names  |
-| having| Array which consist of the conditions and values for <having > clause|
-| having_columns| Comma separated list of columns used in HAVING cluase. This is to prevent count query error when HAVING is used |
+| having| Array which consist of the conditions and values for <having> clause|
+| having_columns| Comma separated list of columns used in HAVING cluase.|
 |filters|Array which consist of conditions for the filters from front end|
 |order|Comma separated order coluns with ASC/DESC key |
 |return_data|Format of the data that has to be returned|
@@ -88,3 +88,166 @@ There are some parameters that needs to be given in the array. The params are me
 |pagination|Used to mention whether pagination is present|
 |page_size|Number of records that has to be shown in each page|
 
+###### Examples
+ **select**
+ ```sh
+ DynaList::Page(array(
+        "select" => "id,name" 
+ ));
+ ```
+ 
+ **from**
+ ```sh
+  DynaList::Page(array(
+        "select" => "id,name",
+        "from"   => "user AS usr"
+ ));
+ ```
+ 
+ **joins**
+ ```sh
+  DynaList::Page(array(
+        "select" => "id,name",
+        "from"   => "user AS usr",
+        "joins"  => " INNER JOIN login AS lgn  ON usr.id = lgn.user_id"
+ ));
+ ```
+ **conditions**
+  ```sh
+  DynaList::Page(array(
+        "select"     => "id,name",
+        "from"       => "user AS usr",
+        "conditions" => array(
+            array("condition" => "id > ?","value" => 10, "operation" => "AND"),
+            array("condition" => "code <> ?","value" => "AU", "operation" => "AND")
+        )
+ ));
+ ```
+ **group**
+  ```sh
+  DynaList::Page(array(
+        "select" => "id,name",
+        "from"   => "user AS usr",
+        "group"  => "code"
+ ));
+ ```
+ 
+ **having**
+  ```sh
+  DynaList::Page(array(
+        "select" => "id,name",
+        "from"   => "customer AS cust",
+        "group"  => "code",
+        "having" => array(
+            array("condition" => "count(*) > ?", "value" => 5, "operation" => "OR")
+        )
+ ));
+ ```
+ 
+ **having_columns**
+   ```sh
+  DynaList::Page(array(
+        "select" => "id,name",
+        "from"   => "customer AS cust",
+        "group"  => "code",
+        "having" => array(
+            array("condition" => "age = ?", "value" => 25, "operation" => "AND")
+            array("condition" => "count(*) < ?", "value" => 10, "operation" => "AND")
+        ),
+        "having_columns"        => "age" 
+ ));
+ ```
+ 
+ **filters**
+ ```sh
+  DynaList::Page(array(
+        "select"  => "id,name",
+        "from"    => "customer AS cust",
+        "filters" => array(
+            array("condition" => "cust.name = ?", "form-field" => "txt_name", 
+                 "operation" => "AND", "type"=>"STRING",
+                 "consider_empty" => "YES"),
+            array("condition" => "cust.created_date = ?", "form-field" => "c_date", 
+            "operation" => "OR", "type"=>"DATE", 
+            "datetime_format_from"=>"d/m/Y", "datetime_format_to"=>"Y-m-d", 
+            "consider_empty" => "NO")
+        )
+ ));
+ ```
+ ``Type can be BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING.``
+ ``If the option consider_empty is YES then the field's condition will be considered for the query created automatically otherwise it will be ruled out. By default this option's value is NO.``
+ ``If both conditions and filters options are present Filters will have more preference. ``
+ 
+**order**
+```sh
+DynaList::Page(array(
+    "select" => "id,name",
+    "from"   => "customer AS cust",
+    "order" => "name ASC"
+));
+```
+
+**return_data**
+```sh
+DynaList::Page(array(
+    "select" => "id,name",
+    "from"   => "customer AS cust",
+    "return_data" => "JSON"
+));
+```
+``return_data can have  HTML / JSON / OBJECT / QUERY``
+
+**view**
+```sh
+DynaList::Page(array(
+    "select"      => "id,name",
+    "from"        => "customer AS cust",
+    "return_data" => "HTML"
+    "view"        => "views/list.php"
+));
+```
+**view_variables**
+```sh
+DynaList::Page(array(
+    "select"         => "id,name",
+    "from"           => "customer AS cust",
+    "return_data"    => "HTML",
+    "view"           => "views/list.php",
+    "view_variables" => array("ids"=>$ids,"names"=>$names)
+));
+```
+
+**page**
+```sh
+DynaList::Page(array(
+    "select"         => "id,name",
+    "from"           => "customer AS cust",
+    "return_data"    => "HTML",
+    "view"           => "views/list.php",
+    "view_variables" => array("ids"=>$ids,"names"=>$names),
+    "page"           => 1
+));
+```
+**pagination**
+```sh
+DynaList::Page(array(
+    "select"         => "id,name",
+    "from"           => "customer AS cust",
+    "return_data"    => "JSON",
+    "page"           => 1,
+    "pagination"     => "YES"
+));
+```
+``Default value for pagination is YES``
+
+**page_size**
+```sh
+DynaList::Page(array(
+    "select"         => "id,name",
+    "from"           => "customer AS cust",
+    "return_data"    => "JSON",
+    "page"           => 1,
+    "pagination"     => "YES"
+    "page_size"      => 25
+));
+```
