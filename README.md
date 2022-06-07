@@ -123,6 +123,11 @@ There are some parameters that needs to be given in the array. The params are me
         )
  ));
  ```
+ | Option | Description |Possible values
+| ------ | ------ |------|
+|condition|The condition which has to be included in the where clause|-|
+|value|The values which has to be added to the respective where clause|-|
+|operation|This option specifies which operation binds the condition to other consitions|AND/OR|
  **group**
   ```sh
   DynaList::Page(array(
@@ -174,10 +179,18 @@ There are some parameters that needs to be given in the array. The params are me
         )
  ));
  ```
- ``Type can be BOOLEAN|DATE|DATETIME|TIME|INTEGER|STRING.``
- ``If the option consider_empty is YES then the field's condition will be considered for the query created automatically otherwise it will be ruled out. By default this option's value is NO.``
- ``If both conditions and filters options are present Filters will have more preference. ``
- 
+  | Option | Description |Possible values
+| ------ | ------ |------|
+|condition|The condition which has to be included in the where clause|-|
+|form-field|The field from which the value is taken for the particular condition|-|
+|operation|This option specifies which operation binds the condition to other consitions|AND/OR|
+|type|The type of the form-field|BOOLEAN/DATE/DATETIME/TIME/INTEGER/STRING.|
+|datetime_format_from|Date time format of th field|-|
+|datetime_format_to|The date time format to which the field value has to be converted|-|
+|consider_empty|If the option consider_empty is YES then the field's condition will be considered for the query created automatically otherwise it will be ruled out. By default this option's value is NO.|YES?NO|
+
+ ``If both conditions and filters options are present filters will have more preference. ``
+
 **order**
 ```sh
 DynaList::Page(array(
@@ -251,3 +264,22 @@ DynaList::Page(array(
     "page_size"      => 25
 ));
 ```
+
+##### List Function
+List function is used in the view page. This function directs the control to the URL from where the data should be formatted and shown. It places the resulting list to the desired area of the DOM.
+
+```sh
+DynaList::List(array());
+```
+
+There are some parameters that needs to be given in the array. The params are mentioned below
+| Param | Description |
+| ------ | ------ |
+|url|Target location of controller/action function|
+|form_id|Id of the filter form|
+|target_div_id|Div id where we want to show the output|
+|button_id|ID of the filtering button|
+|autolist|Can have true / false : If true will show the output first time without pressing button|
+|column|Specify the columns of the list|
+|pager|Location where we want to show the page controller|
+|action|To point out the action columns where edit,delete and show links should be shown|
