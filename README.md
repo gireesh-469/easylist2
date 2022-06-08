@@ -284,3 +284,94 @@ There are some parameters that needs to be given in the array. The params are me
 |column|Specify the columns of the list|
 |pager|Location where we want to show the page controller|
 |action|To point out the action columns where edit,delete and show links should be shown|
+
+###### Examples
+**url,form_id,target_div_id,button_id,column,pager**
+These 6 params are mandatory fields for List() function.
+```sh
+DynaList::List(array(
+    "url"           => "customer/list",
+    "form_id"       => "user_filter_form",
+    "target_div_id" => "user_list_div",
+    "button_id"     => "user_list",
+    "column"        => array(
+                            array("head" => "Code", "column" => "a_code",
+                            "width" => '30%',"sort" => "a_code",
+                            "class" => "text-center"),
+                            array("head" => "Town", "column" => "a_town", 
+                            "width" => '30%', "class" => "",
+                            "sort" => "a_town"),
+                            array("head" => "Address", "column" => "a_state", 
+                            "width" => '40%', "class" => "",
+                            "sort" => "address")
+                       ),
+    "pager"          => "BOTH"
+));
+```
+######  Column params
+####
+ | Option | Description |
+| ------ | ------ |
+|head|Header for the particular column|
+|column|The param from the JSON response fom which the data has to be taken|
+|width|Width of the column|
+|sort|Which column should be considered for sorting|
+|class|Mention the CSS class|
+
+**autolist**
+```sh
+DynaList::List(array(
+    "url"           => "customer/list",
+    "form_id"       => "user_filter_form",
+    "target_div_id" => "user_list_div",
+    "button_id"     => "user_list",
+    "autolist"       => true,
+    "column"        => array(
+                            array("head" => "Code", "column" => "a_code",
+                            "width" => '30%',"sort" => "a_code",
+                            "class" => "text-center"),
+                            array("head" => "Town", "column" => "a_town", 
+                            "width" => '30%', "class" => "",
+                            "sort" => "a_town"),
+                            array("head" => "Address", "column" => "a_state", 
+                            "width" => '40%', "class" => "",
+                            "sort" => "address")
+                       ),
+    "pager"          => "BOTH"
+));
+```
+``'autolist' can either have  true/false``
+
+**action**
+```sh
+DynaList::List(array(
+    "url"           => "customer/list",
+    "form_id"       => "user_filter_form",
+    "target_div_id" => "user_list_div",
+    "button_id"     => "user_list",
+    "column"        => array(
+                            array("head" => "Code", "column" => "a_code",
+                            "width" => '30%',"sort" => "a_code",
+                            "class" => "text-center"),
+                            array("head" => "Town", "column" => "a_town", 
+                            "width" => '30%', "class" => "",
+                            "sort" => "a_town"),
+                            array("head" => "Address", "column" => "a_state", 
+                            "width" => '40%', "class" => "",
+                            "sort" => "address")
+                       ),
+    "pager"          => "BOTH",
+    "action"         => array("<a 
+                                href='http://www.test.com/{name}/index'>
+                                <span class='glyphicon glyphicon-pencil'>
+                                </span></a>&nbsp;",
+                                "&nbsp;<a href='http://www.test.com/{id}/delete'>
+                                <i style='color:red;font-size:20px;'
+                                class='fa fa-trash-o'></i></a>&nbsp;",
+                                '<a 
+                                href="http://www.test.com/{xx}/view">
+                                <span style="font-size:20px;" class="fa fa-eye">
+                                </span></a>'
+                           )
+));
+```
