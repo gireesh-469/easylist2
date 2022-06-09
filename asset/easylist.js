@@ -1,12 +1,14 @@
 var header = {};
 var headerColums = [];
 var form = "";
+var button = "";
 $(document).ready(function(){
 
 	function getConfiguration(type=''){
-		header = isJsonObject(decodeURIComponent($('#easylist-config').val()));
 		
+		header = isJsonObject(decodeURIComponent($('#easylist-config').val()));
 		form = header.form_id;
+		button = header.button_id;
 		addUpdateHiddenField('page_size', 25, form);
 		addUpdateHiddenField('page', 1, form);
 		addUpdateHiddenField('sort', '', form);
@@ -16,10 +18,17 @@ $(document).ready(function(){
 			getCoreData();
 		}
 	}
+	getConfiguration();
+	$(document).on('click', '#'+button , function(e){
+		addUpdateHiddenField('page_size', 25, form);
+		addUpdateHiddenField('page', 1, form);
+		addUpdateHiddenField('sort', '', form);
+		addUpdateHiddenField('sort_type', '', form);
+		getCoreData();
+	});
 	function isHeaderObjectExist(objname){
 		return (header.hasOwnProperty(objname)) ? true : false;
 	}
-	getConfiguration();
 
 	function getCoreData(){
 		if(isHeaderObjectExist("column")){
@@ -30,6 +39,9 @@ $(document).ready(function(){
 				url : url,
 				dataType : 'json',
 				data : $('#'+form).serialize().replace(/%5B%5D/g,'[]'),
+				beforeSend: function() {
+					$('#'+header.target_div_id).html('<i class="fa fa-spinner fa-spin" style="font-size: 300px;color: #e7e7e7;"></i>');
+				},
 				success : function(response) {
 					var table = "";
 					if(response.return_data == 'HTML'){
@@ -40,7 +52,7 @@ $(document).ready(function(){
 						table   	+= generateWidgetTable(response);
 						table  		+= "</table>";
 					}
-					$('#'+header.targer_div_id).html(table);
+					$('#'+header.target_div_id).html(table);
 					widgetPagination(response);
 				},
 				error : function(response) {
@@ -65,7 +77,7 @@ $(document).ready(function(){
 					table +="<tr>";
 					$.each(witem, function (key, val) {
 						if($.inArray(key, headerColums)  !== -1){
-							table +='<td>'+val+'</td>';
+							table +='<td class="text-left">'+val+'</td>';
 						}
 					});
 					if(hasAction){
@@ -98,7 +110,9 @@ $(document).ready(function(){
 		$.each(tableheader, function (i, item) {
 			if( item.hasOwnProperty('head') && item.hasOwnProperty('column') ){
 				table += '<th ';
-				if(item.hasOwnProperty('class')){ table += ' class="'+item.class+'" '; }
+				if(item.hasOwnProperty('class')){ 
+					table += ' class="'+item.class+'" ';
+				}
 				if(item.hasOwnProperty('width')){ table += ' width="'+item.width+'" '; }
 				table += '>';
 				if(item.hasOwnProperty('sort') && item.sort != ""){
@@ -106,7 +120,7 @@ $(document).ready(function(){
 				}else{
 					table += item.head;
 				}
-				headerColums.push(item.column)
+				headerColums.push(item.column);
 				table += '</th>';
 			}
 		});
@@ -115,35 +129,6 @@ $(document).ready(function(){
 		return table;
 	}
 
-
-
-// var config = JSON.parse(decodeURIComponent($('#easylist-config').val()));
-// var globalColumn = config.
-// var data = [{"name":"John", "age":30, "car":"BMW", "id":2},{"name":"Jibin", "age":40, "car":"OD"}];
-
-// var hasAction = (config.hasOwnProperty("action")) ? true : false;
-// data.forEach(function (eachItem) {
-// 	var eachHtmlItems =  "";
-// 	if(hasAction){
-// 		config.action.forEach(function (urlValue) {
-// 			var mySubUrl = urlValue.match(/(?<=\{)(.*?)(?=\})/g);
-// 			mySubUrl.forEach(function (urlEachItem) {
-// 				if(eachItem.hasOwnProperty(urlEachItem)){
-// 					urlValue = urlValue.replace('{'+urlEachItem+'}', eachItem[urlEachItem]);
-// 				}else{
-// 					urlValue = urlValue.replace('{'+urlEachItem+'}', 0);
-// 				}
-// 			});
-// 			eachHtmlItems += urlValue;
-// 		});
-// 		//console.log(1);
-// 		//console.log(eachHtmlItems);
-// 	}
-
-// });
-
-//var form = 'address';
-	
 function widgetPagination(json_data){
 	if(json_data){
 		displayPaginationHTML(json_data);
@@ -197,15 +182,15 @@ function displayPaginationHTML(json_data){
   				</div>`;
 	if(header.pager == 'TOP'){
 		$('.custom-pagination').remove();
-		$('#' + header.targer_div_id).prepend(html);
+		$('#' + header.target_div_id).prepend(html);
 	}else if(header.pager == 'BOTTOM'){
 		$('.custom-pagination').remove();
-		$('#' + header.targer_div_id).append(html);
+		$('#' + header.target_div_id).append(html);
 	}
 	else{
 		$('.custom-pagination').remove();
-		$('#' + header.targer_div_id).prepend(html);
-		$('#' + header.targer_div_id).append(html);
+		$('#' + header.target_div_id).prepend(html);
+		$('#' + header.target_div_id).append(html);
 	}
 }
 

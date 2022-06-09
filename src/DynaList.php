@@ -65,17 +65,18 @@ class DynaList
         $query              = "";
         $viewData           = "";
         $subCondition       = "";
+        $methodArray        = (!empty($_POST)) ? $_POST : $_GET;
         
         $return_data        = isset($options["return_data"]) ? $options["return_data"] : "JSON";
-        $page_size          = isset($_POST['page_size']) ? $_POST['page_size'] : (isset($options["page_size"]) ? $options["page_size"] : 25);
-        $page               = isset($_POST['page']) ? $_POST['page'] : (isset($options["page"]) ? $options["page"] : 1);
-        $total_records      = isset($_POST['total_records']) ? $_POST['total_records'] : (isset($options["total_records"]) ? $options["page"] : 0);
+        $page_size          = isset($methodArray['page_size']) ? $methodArray['page_size'] : (isset($options["page_size"]) ? $options["page_size"] : 25);
+        $page               = isset($methodArray['page']) ? $methodArray['page'] : (isset($options["page"]) ? $options["page"] : 1);
+        $total_records      = isset($methodArray['total_records']) ? $methodArray['total_records'] : (isset($options["total_records"]) ? $options["page"] : 0);
         $pagination         = isset($options["pagination"]) ? $options["pagination"] : 'YES';
         $having_columns     = isset($options["having_columns"]) ? "," . trim($options["having_columns"],",") : '';
         
         $order              = isset($options["order"]) ? $options["order"] : "";
-        $sort               = isset($_POST['sort']) ? $_POST['sort'] : "";
-        $sort_type          = isset($_POST['sort_type']) ? $_POST['sort_type'] : "";
+        $sort               = isset($methodArray['sort']) ? $methodArray['sort'] : "";
+        $sort_type          = isset($methodArray['sort_type']) ? $methodArray['sort_type'] : "";
         
         $mainData = array(
              "page_size"       => $page_size
@@ -287,14 +288,15 @@ class DynaList
      */
     public static function ConditionBuilderForFilter($filter){
     
-        $result = "";
+        $result      = "";
+        $methodArray = (!empty($_POST)) ? $_POST : $_GET;
         
         foreach($filter AS $eachfilter){
             $subfilter = "";
             $subValues = "";
             
             $condition = isset($eachfilter['condition']) ? $eachfilter['condition'] : "";
-            $postVariable = !isset($eachfilter['form-field']) ? "" : (isset($_POST[$eachfilter['form-field']]) ? $_POST[$eachfilter['form-field']] : "");
+            $postVariable = !isset($eachfilter['form-field']) ? "" : (isset($methodArray[$eachfilter['form-field']]) ? $methodArray[$eachfilter['form-field']] : "");
             $operation = isset($eachfilter['operation']) ? $eachfilter['operation'] : "";
             $type = isset($eachfilter['type']) ? trim(strtoupper($eachfilter['type'])) : "STRING";
             $dateFormatFrom = isset($eachfilter['datetime_format_from']) ? trim($eachfilter['datetime_format_from']) : "Y-m-d";
@@ -388,7 +390,7 @@ class DynaList
      * * array(
         "url"            => "<target location of controller/action function>",
         'form_id'        => '<form id >',
-        'targer_div_id'  => '<div id where we want to show the output>',
+        'target_div_id'  => '<div id where we want to show the output>',
         'button_id'      => '<filter button id>',
         "autolist"       => <true | false : If true will show the output first time without pressing button>,
         "column"         => array( //Provide header detail
@@ -406,10 +408,10 @@ class DynaList
      */
     public static function List($config)
     {
-        if(!array_key_exists("url", $config) || !array_key_exists("form_id", $config) || !array_key_exists("targer_div_id", $config) ||
+        if(!array_key_exists("url", $config) || !array_key_exists("form_id", $config) || !array_key_exists("target_div_id", $config) ||
             !array_key_exists("button_id", $config) || !array_key_exists("column", $config) ||!array_key_exists("pager", $config))
         {
-              throw new EasyListException("Required parameters missing. Check these parameter : url, form_id, targer_div_id, button_id, column, pager.");
+              throw new EasyListException("Required parameters missing. Check these parameter : url, form_id, target_div_id, button_id, column, pager.");
         }
         
         if(!array_key_exists($config['column'], $config)){
@@ -418,7 +420,7 @@ class DynaList
         
         $config = rawurlencode(str_replace('null', '""', json_encode($config)));
         
-        echo '<input type="text" id="easylist-config" value=\''.$config.'\' />';
+        echo '<input type="hidden" id="easylist-config" value=\''.$config.'\' />';
     }
     
     /**
