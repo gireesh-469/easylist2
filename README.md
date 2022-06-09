@@ -273,7 +273,7 @@ List function is used in the view page. This function directs the control to the
 DynaList::List(array());
 ```
 
-There are some parameters that needs to be given in the array. The params are mentioned below
+There parameters for list function is mentioned below
 | Param | Description |
 | ------ | ------ |
 |url|Target location of controller/action function|
@@ -374,4 +374,33 @@ DynaList::List(array(
                                 </span></a>'
                            )
 ));
+```
+##### Pager Function 
+Pager function is to show pagination in the listing page.
+
+```sh
+DynaList::Pager();
+```
+| Param | Description |
+| ------ | ------ |
+|page|This is a mandatory parameter.The page object is passed ie the return value from the Page function.|
+|page_sizes|The array of values for the different page sizes for listing.|
+
+##### Examples
+**page**
+```sh
+$pageObject =   DynaList::Page(array(
+                    "select" => "id,name",
+                    "from"   => "user AS usr"
+                ));
+DynaList::Pager($pageObject);
+```
+**page_sizes**
+```sh
+$pageObject =   DynaList::Page(array(
+                    "select" => "id,name",
+                    "from"   => "user AS usr"
+                ));
+$page_sizes = array(5,10,25,50,100,250);
+DynaList::Pager($pageObject,$page_sizes);
 ```
