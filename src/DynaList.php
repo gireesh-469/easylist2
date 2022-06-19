@@ -427,7 +427,7 @@ class DynaList
      * @param array $page
      * Description : Provide pager widget to developter to design his own control
      */
-    public static function Pager($page, $page_sizes = null)
+    public static function Pager($page, $formid = null,$page_sizes = null)
     {
         $start_page = $page->total_records == 0 ? 0 : 1;
         $min = ($page->page - 1) * $page->page_size + $start_page;
@@ -464,7 +464,7 @@ class DynaList
                 <script>
                     function pagination{$random}(page, element, page_size, total_records){
                         //var form_id = element.closest('form').id;
-                        form_id = 'address';
+                        form_id = '{$formid}';
                         updateHiddenAttribute{$random}('page', page, form_id);
                         updateHiddenAttribute{$random}('page_size', page_size, form_id);
                         updateHiddenAttribute{$random}('total_records', total_records, form_id);
@@ -472,7 +472,7 @@ class DynaList
                     }
                     function paginationBySize{$random}(page, element,total_records){
                         //var form_id = element.closest('form').id;
-                        form_id = 'address';
+                        form_id = '{$formid}';
                         var page_size = element.value;
                         updateHiddenAttribute{$random}('page', page, form_id);
                         updateHiddenAttribute{$random}('page_size', page_size, form_id);
