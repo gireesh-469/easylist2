@@ -13,6 +13,7 @@ use EasyList2\Exceptions\EasyListException;
 class Listing
 {
     public static $connection;
+    public static $protocol;
     
     /**
      * Creates Connection
@@ -22,6 +23,7 @@ class Listing
         if(!self::$connection){
             $conn = new ListConnection();
             self::$connection = $conn->setConnection();
+            self::$protocol = $conn->getProtocol();
         } 
     }
     
@@ -167,6 +169,36 @@ class Listing
                 $mainData["total_pages"] = $total_pages;
                 
                 if($total_pages > 0){
+                    
+                    switch(self::$protocol){
+                        case 'MYSQL':
+                            $sql .= " LIMIT {$offset},{$page_size} ";
+                            break;
+                        case 'SQLSRV':
+                            $sql .= " LIMIT {$page_size} OFFSET {$offset} ";
+                            break;
+                        case 'ORACLE':
+                            if($offset <= 0){
+                                $sql .= " FETCH NEXT {$page_size} ROWS ONLY ";
+                            } else {
+                                $sql .= " OFFSET {$offset} ROWS FETCH NEXT {$page_size} ROWS ONLY ";
+                            }
+                            break;
+                        case 'POSTGRESQL':
+                            $sql .= " OFFSET {$offset} LIMIT {$page_size} ";
+                            break;
+                        case 'SYBASE':
+                            $sql .= " LIMIT {$page_size} OFFSET {$offset} ";
+                            break;
+                        case 'INFORMIX':
+                            //:TODO
+                            break;
+                        default:
+                            break;
+                    }
+                    
+                    
+                    
                     $sql .= " LIMIT {$offset},{$page_size}";
                 }
             }

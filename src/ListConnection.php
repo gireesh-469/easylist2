@@ -89,4 +89,9 @@ class ListConnection
         }
     }
     
+    public function getProtocol(){
+        return $this->protocol;
+    }
+    
+    
 }
