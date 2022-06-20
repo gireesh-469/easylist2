@@ -10,4 +10,5 @@ if (!defined('PHP_EASYLIST_AUTOLOAD_PREPEND'))
 require __DIR__.'/src/ListConnection.php';
 require __DIR__.'/src/DynaList.php';
 require __DIR__.'/src/Listing.php';
+require __DIR__.'/src/ListFilter.php';
 require __DIR__.'/src/Exceptions/EasyListException.php';
