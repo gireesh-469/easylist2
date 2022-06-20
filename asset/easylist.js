@@ -47,13 +47,14 @@ $(document).ready(function(){
 					if(response.return_data == 'HTML'){
 						table = response.data;
 					} else {
-						table 	 	 = '<table class="table table-condensed table-hover tank-core-table">';
+						table 	 	 = '<table class="table table-bordered  table-condensed table-hover tank-core-table">';
 						table 		+= generateWidgetHeader(header.column);
 						table   	+= generateWidgetTable(response);
 						table  		+= "</table>";
 					}
 					$('#'+header.target_div_id).html(table);
 					widgetPagination(response);
+					applySortClass();
 				},
 				error : function(response) {
 					// $('html, body').animate({scrollTop : 0}, 400);
@@ -116,7 +117,7 @@ $(document).ready(function(){
 				if(item.hasOwnProperty('width')){ table += ' width="'+item.width+'" '; }
 				table += '>';
 				if(item.hasOwnProperty('sort') && item.sort != ""){
-					table += '<a href="javascript:void(0)" class="sortClass" data-sort="'+item.sort+'" data-sort-type="asc" title="Sort">'+item.head+'</a>';
+					table += '<a href="javascript:void(0)" class="sortClass" data-sort="'+item.sort+'" data-sort-type="asc" title="Sort">'+item.head+'</a>&nbsp<i class="fa fa-lg" aria-hidden="true"></i>';
 				}else{
 					table += item.head;
 				}
@@ -249,13 +250,19 @@ $(document).on('click', '.sortClass', function(){
 	getCoreData();
 });
 
-
-
-
-
-
-
-
-
+function applySortClass(){
+	$('.text-center').removeClass('sortClass-th');
+	$('a[data-sort="'+$('#sort').val()+'"]').parent('th').addClass('sortClass-th');
+	if($('#sort_type').val() == 'asc'){
+		var imgUrl = 'fa fa-lg fa-sort-asc';
+		var title = 'Ascending';
+	}else{
+		var imgUrl = 'fa fa-lg fa-sort-desc';
+		var title = 'Descending';
+	}
+	var ImgSrc  = $('a[data-sort="'+$('#sort').val()+'"]').siblings('.fa');
+	ImgSrc.removeClass().addClass(imgUrl);
+	ImgSrc.attr('title',title);
+}
 
 });//end of document ready

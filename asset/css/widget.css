@@ -1,0 +1,60 @@
+.sortClass-th{
+  border-bottom-color: red !important;
+}
+
+.sortClass{
+  color: #000000  !important;
+}
+.custom-pagination {
+    top: 0 !important;
+    position: relative !important;
+    width: 100%;
+    text-align: center;
+    display: block;
+    float: left;
+    margin-bottom: 10px;
+  }
+  
+  .custom-pagination form {
+    text-align: center;
+  }
+  
+  .custom-pagination div {
+    display: inline-block;
+  }
+  
+  .custom-pagination .enabled {
+    cursor: pointer;
+    color: #46b8da;
+  }
+  
+  .custom-pagination .enabled:hover {
+    color: #31708f;
+  }
+  
+  .custom-pagination .disabled {
+    color: #ccc;
+  }
+  
+  .custom-pagination .disabled:hover {
+    cursor: auto;
+    color: #ccc;
+  }
+  
+  .custom-pagination .pagesize {
+    display: none;
+  }
+  
+  .custom-pagination .pagedisplay {
+    display: inline-block;
+    margin: 0 10px;
+    text-align: center;
+    color: #000;
+  }
+  
+  th {
+    padding: 10px 2px !important;
+  }
+  
+ 
+
