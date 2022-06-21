@@ -254,10 +254,10 @@ function applySortClass(){
 	$('.text-center').removeClass('sortClass-th');
 	$('a[data-sort="'+$('#sort').val()+'"]').parent('th').addClass('sortClass-th');
 	if($('#sort_type').val() == 'asc'){
-		var imgUrl = 'fa fa-lg fa-sort-asc';
+		var imgUrl = 'glyphicon glyphicon-arrow-down';
 		var title = 'Ascending';
 	}else{
-		var imgUrl = 'fa fa-lg fa-sort-desc';
+		var imgUrl = 'glyphicon glyphicon-arrow-up';
 		var title = 'Descending';
 	}
 	var ImgSrc  = $('a[data-sort="'+$('#sort').val()+'"]').siblings('.fa');
