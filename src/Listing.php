@@ -378,7 +378,6 @@ class Listing
                                 array("head" => "Town", "column" => "a_town", "width" => '30%', "class" => "","sort" => "a_town"),
                                 array("head" => "Address", "column" => "a_state", "width" => '40%', "class" => "","sort" => "address")
                            ),
-        "return_data"    => "<HTML / JSON / OBJECT >",
         "data"           => <Data retruned by the Page function>
         "pager"          => "TOP / BOTTOM / BOTH", //Location where we want to show the page controller 
         'page_size'      => <pagination sizes. Default is array(10,25,50,100,250) >,
