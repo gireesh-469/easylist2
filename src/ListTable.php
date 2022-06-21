@@ -90,7 +90,73 @@ class ListTable
     }
     
     public function table($data){
-        
+        if(array_key_exists('column', $data)){
+            $headerArr = array();
+            $actionBit = 0;
+            $tableHtml = '<table class="table table-bordered  table-condensed table-hover tank-core-table">'
+                            .'<tbody>'
+                                .'<tr>';
+            foreach($data['column'] AS $dataHeader){
+            $headerArr[] = $dataHeader['column'];
+            $tableHtml              .= '<th class="'.((array_key_exists('class', $dataHeader)) ? $dataHeader['class'] : '').'" 
+                                            width="'.((array_key_exists('width', $dataHeader)) ? $dataHeader['width'] : '').'" >';
+            if(array_key_exists('sort', $dataHeader)){
+                $tableHtml              .= ' <a  href="javascript:void(0)" 
+                                                 class="sortClass"
+                                                 data-sort="'.$dataHeader['sort'].'" 
+                                                 data-sort-type="asc" 
+                                                 title="Sort">'.$dataHeader['head'].'</a>';
+           }else{
+                $tableHtml              .= $dataHeader['head'];
+           }
+           $tableHtml              .= '</th>';
+           }
+           if(array_key_exists('action', $data)){
+                $tableHtml .= '<th class="text-center">Action</th>';
+                $actionBit = 1;
+           }
+           $tableHtml          .= '</tr>';
+           
+           if(!empty($data['data'])){
+            foreach($data['data'] AS $dataTdItems){
+                $tableHtml      .= '<tr>';
+                $assoArray = (array) $dataTdItems;
+                foreach($headerArr AS $eachHeaderColumn){
+                    if(array_key_exists($eachHeaderColumn, $assoArray)){ $tableHtml       .= '<td class="text-left">'.$assoArray[$eachHeaderColumn].'</td>';}
+                    else{ $tableHtml       .= '<td class="text-left"></td>'; }
+                }
+                if(array_key_exists('action', $data)){
+                    $tableHtml         .= '<td style="min-width:89px;" class="text-center">';
+                    $actionItemStr = implode("", $data['action']);
+                        preg_match_all('/(?<=\{)(.*?)(?=\})/', $actionItemStr, $matches);
+                        foreach($matches[0] AS $eachMatch){
+                            if(array_key_exists($eachMatch, $assoArray)){
+                                $actionItemStr    = str_replace('{'.$eachMatch.'}', $assoArray[$eachMatch], $actionItemStr); 
+                            }else{
+                                $actionItemStr    = str_replace('{'.$eachMatch.'}', 0, $actionItemStr); 
+                            }
+                        }
+                        $tableHtml         .= $actionItemStr;
+                    $tableHtml         .= '</td>';
+                }
+                $tableHtml      .= '</tr>';
+            }
+            
+           }else{
+            $tableHtml          .= '<tr><td class="warning" colspan="'.(count($headerArr) + $actionBit).'"  style="text-align: center; vertical-align: middle;">No Record Found</td></tr>';
+           }
+
+
+           
+
+           
+
+           $tableHtml       .= '</tbody>'
+                        .'</table>';
+
+            return $tableHtml;
+        }
+        //$header = $data['column'];
         
         
     }

@@ -6,16 +6,18 @@ $(document).ready(function(){
 
 	function getConfiguration(type=''){
 		
-		header = isJsonObject(decodeURIComponent($('#easylist-config').val()));
-		form = header.form_id;
-		button = header.button_id;
-		addUpdateHiddenField('page_size', 25, form);
-		addUpdateHiddenField('page', 1, form);
-		addUpdateHiddenField('sort', '', form);
-		addUpdateHiddenField('sort_type', '', form);
-	
-		if(header && header.autolist == true){
-			getCoreData();
+		if($('#easylist-config').length > 0){
+			header = isJsonObject(decodeURIComponent($('#easylist-config').val()));
+			form = header.form_id;
+			button = header.button_id;
+			addUpdateHiddenField('page_size', 25, form);
+			addUpdateHiddenField('page', 1, form);
+			addUpdateHiddenField('sort', '', form);
+			addUpdateHiddenField('sort_type', '', form);
+		
+			if(header && header.autolist == true){
+				getCoreData();
+			}
 		}
 	}
 	getConfiguration();
@@ -66,9 +68,8 @@ $(document).ready(function(){
 
 	function generateWidgetTable(widgetData){
 
-		var count = header.column.length;
 		var hasAction = isHeaderObjectExist("action");
-	
+		var count = parseInt(header.column.length) +  parseInt(hasAction ? 1 : 0);
 		var table	   = '';
 
 		if(widgetData.return_data == 'JSON'){
@@ -82,7 +83,7 @@ $(document).ready(function(){
 						}
 					});
 					if(hasAction){
-						header.action.forEach(function (urlValue) {
+						urlValue = header.action.join('');
 							var mySubUrl = urlValue.match(/(?<=\{)(.*?)(?=\})/g);
 							mySubUrl.forEach(function (urlEachItem) {
 
@@ -93,13 +94,12 @@ $(document).ready(function(){
 								}
 							});
 							eachHtmlItems += urlValue;
-						});
-						table += '<td>'+eachHtmlItems+'</td>';
+						table += '<td style="min-width:89px;" class="text-center">'+eachHtmlItems+'</td>';
 					}
 					table +="</tr>";
 				});
 			}else{
-				table += '<tr class="text-center"><td colspan="'+count+'"  style="text-align: center; vertical-align: middle;">No Record Found</td></tr>';
+				table += '<tr class="text-center"><td class="warning" colspan="'+count+'"  style="text-align: center; vertical-align: middle;">No Record Found</td></tr>';
 			}			
 		}
 			

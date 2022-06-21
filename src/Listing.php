@@ -421,7 +421,7 @@ class Listing
                         
             $table   = new ListTable();
             $pager   = $table->pager($tabledata, $formid, $page_sizes, $random);
-            $scripts = $table->jsScripts($random);
+            $scripts = $table->jsScripts($random, $formid);
             
             //Print pager at Top
             if($pager == "TOP" || $pager == "BOTH"){
@@ -439,10 +439,10 @@ class Listing
             
         } elseif($return_data == "OBJECT"){
             
-            $table   = new ListTable();
-            $pager   = $table->pager($config["data"]["data"], $formid, $page_sizes, $random);
-            $table   = $table->table($config);
-            $scripts = $table->jsScripts($random);
+            $table      = new ListTable();
+            $pager      = $table->pager($config["data"]["data"], $formid, $page_sizes, $random);
+            $tableData  = $table->table($config);
+            $scripts    = $table->jsScripts($random, $formid);
             
             //Print pager at Top
             if($pager == "TOP" || $pager == "BOTH"){
@@ -450,7 +450,7 @@ class Listing
             }
             
             //Print table & Script
-            echo $table;
+            echo $tableData;
             echo $scripts;
             
             //Print pager at Bottom
