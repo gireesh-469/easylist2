@@ -440,7 +440,24 @@ class Listing
             
         } elseif($return_data == "OBJECT"){
             
-            //:TODO : Handle Object
+            $table   = new ListTable();
+            $pager   = $table->pager($config["data"]["data"], $formid, $page_sizes, $random);
+            $table   = $table->table($config);
+            $scripts = $table->jsScripts($random);
+            
+            //Print pager at Top
+            if($pager == "TOP" || $pager == "BOTH"){
+                echo $pager;
+            }
+            
+            //Print table & Script
+            echo $table;
+            echo $scripts;
+            
+            //Print pager at Bottom
+            if($pager == "BOTTOM" || $pager == "BOTH"){
+                echo $pager;
+            }
         }
     }
     

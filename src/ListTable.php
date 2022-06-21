@@ -89,5 +89,9 @@ class ListTable
         return $html;
     }
     
-    
+    public function table($data){
+        
+        
+        
+    }
 }
