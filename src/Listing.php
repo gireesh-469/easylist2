@@ -401,7 +401,7 @@ class Listing
             throw new EasyListException("Form_id should not be NULL");
         }
         
-        if($return_data == "JSON"){
+        if($return_data == "JSON" || $return_data == "HTML"){
             if(!array_key_exists("url", $config) || !array_key_exists("form_id", $config) || !array_key_exists("target_div_id", $config) ||
                 !array_key_exists("button_id", $config) || !array_key_exists("column", $config) ||!array_key_exists("pager", $config))
             {
