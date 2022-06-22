@@ -397,7 +397,7 @@ class Listing
         $pager       = isset($config["pager"]) ? strtoupper(trim($config["pager"])) : "TOP";
         $random      = rand (10000, 99999);
         
-        if($formid = ""){
+        if($formid == ""){
             throw new EasyListException("Form_id should not be NULL");
         }
         
@@ -420,13 +420,13 @@ class Listing
             
             $tabledata = $config["data"]["data"];
                         
-            $table   = new ListTable();
-            $pager   = $table->pager($tabledata, $formid, $page_sizes, $random);
-            $scripts = $table->jsScripts($random, $formid);
+            $table      = new ListTable();
+            $pagerData  = $table->pager($tabledata, $formid, $page_sizes, $random);
+            $scripts    = $table->jsScripts($random, $formid);
             
             //Print pager at Top
             if($pager == "TOP" || $pager == "BOTH"){
-                echo $pager;
+                echo $pagerData;
             }
             
             //Print table & Script
@@ -435,19 +435,19 @@ class Listing
             
             //Print pager at Bottom
             if($pager == "BOTTOM" || $pager == "BOTH"){
-                echo $pager;
+                echo $pagerData;
             }
             
         } elseif($return_data == "OBJECT"){
-            
             $table      = new ListTable();
-            $pager      = $table->pager($config["data"]["data"], $formid, $page_sizes, $random);
-            $tableData  = $table->table($config);
             $scripts    = $table->jsScripts($random, $formid);
+            $pagerData  = $table->pager($config['data'], $formid, $page_sizes, $random);
+            $tableData  = $table->table($config,$random);
+            
             
             //Print pager at Top
             if($pager == "TOP" || $pager == "BOTH"){
-                echo $pager;
+                echo $pagerData;
             }
             
             //Print table & Script
@@ -456,7 +456,7 @@ class Listing
             
             //Print pager at Bottom
             if($pager == "BOTTOM" || $pager == "BOTH"){
-                echo $pager;
+                echo $pagerData;
             }
         }
     }

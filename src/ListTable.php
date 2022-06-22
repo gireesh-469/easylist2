@@ -13,7 +13,7 @@ use EasyList2\Exceptions\EasyListException;
 class ListTable
 {
     public function pager($page, $formid, $page_sizes, $random){
-        
+
         $start_page = $page->total_records == 0 ? 0 : 1;
         $min = ($page->page - 1) * $page->page_size + $start_page;
         $max = $min + $page->total_pages - $start_page;
@@ -51,7 +51,14 @@ class ListTable
     }
     
     public function jsScripts($random, $formid){
-        
+
+        $isSortApply = $sortType = "";
+        if(isset($_GET['sort']) && $_GET['sort'] != "") $isSortApply = $_GET['sort'];
+        elseif(isset($_POST['sort']) && $_POST['sort'] != "") $isSortApply = $_POST['sort'];
+
+        if(isset($_GET['sort_type']) && $_GET['sort_type'] != "") $sortType = $_GET['sort_type'];
+        elseif(isset($_POST['sort_type']) && $_POST['sort_type'] != "") $sortType = $_POST['sort_type'];
+
         $html = "<script>
                     function pagination{$random}(page, element, page_size, total_records){
                         //var form_id = element.closest('form').id;
@@ -59,6 +66,8 @@ class ListTable
                         updateHiddenAttribute{$random}('page', page, form_id);
                         updateHiddenAttribute{$random}('page_size', page_size, form_id);
                         updateHiddenAttribute{$random}('total_records', total_records, form_id);
+                        updateHiddenAttribute{$random}('sort', '{$isSortApply}', '{$formid}');
+                        updateHiddenAttribute{$random}('sort_type', '{$sortType}', '{$formid}');
                         document.getElementById(form_id).submit();
                     }
                     function paginationBySize{$random}(page, element,total_records){
@@ -68,6 +77,8 @@ class ListTable
                         updateHiddenAttribute{$random}('page', page, form_id);
                         updateHiddenAttribute{$random}('page_size', page_size, form_id);
                         updateHiddenAttribute{$random}('total_records', total_records, form_id);
+                        updateHiddenAttribute{$random}('sort', '{$isSortApply}', '{$formid}');
+                        updateHiddenAttribute{$random}('sort_type', '{$sortType}', '{$formid}');
                         document.getElementById(form_id).submit();
                     }
                     function updateHiddenAttribute{$random}(name, value, form){
@@ -84,13 +95,29 @@ class ListTable
                             document.getElementById(form).appendChild(input);
                         }
                     }
-                </script>";
+                    function applySort{$random}(currentelement){
+                        var sortfield = currentelement.dataset.sort;
+                        var sortType = currentelement.dataset.sort_type;
+
+                        updateHiddenAttribute{$random}('sort', sortfield, '{$formid}');
+                        updateHiddenAttribute{$random}('sort_type', sortType, '{$formid}');
+                        document.getElementById(form_id).submit();
+                    }";
+                    $html .= "</script>";
         
         return $html;
     }
     
-    public function table($data){
+    public function table($data, $random = ""){
         if(array_key_exists('column', $data)){
+
+            $isSortApply = $sortType = "";
+            if(isset($_GET['sort']) && $_GET['sort'] != "") $isSortApply = $_GET['sort'];
+            elseif(isset($_POST['sort']) && $_POST['sort'] != "") $isSortApply = $_POST['sort'];
+
+            if(isset($_GET['sort_type']) && $_GET['sort_type'] != "") $sortType = $_GET['sort_type'];
+            elseif(isset($_POST['sort_type']) && $_POST['sort_type'] != "") $sortType = $_POST['sort_type'];
+
             $headerArr = array();
             $actionBit = 0;
             $tableHtml = '<table class="table table-bordered  table-condensed table-hover tank-core-table">'
@@ -98,16 +125,25 @@ class ListTable
                                 .'<tr>';
             foreach($data['column'] AS $dataHeader){
             $headerArr[] = $dataHeader['column'];
-            $tableHtml              .= '<th class="'.((array_key_exists('class', $dataHeader)) ? $dataHeader['class'] : '').'" 
-                                            width="'.((array_key_exists('width', $dataHeader)) ? $dataHeader['width'] : '').'" >';
+            
             if(array_key_exists('sort', $dataHeader)){
-                $tableHtml              .= ' <a  href="javascript:void(0)" 
+                $sortValue = base64_encode(trim($dataHeader['sort']));
+                $sortTdbit = ($sortValue == $isSortApply) ? true : false;
+                $tableHtml              .= '<th class="'.(($sortTdbit) ? 'sortClass-th' : '').' '.((array_key_exists('class', $dataHeader)) ? $dataHeader['class'] : '').'" 
+                                            width="'.((array_key_exists('width', $dataHeader)) ? $dataHeader['width'] : '').'" >
+                                             <a  href="javascript:void(0)"
                                                  class="sortClass"
-                                                 data-sort="'.$dataHeader['sort'].'" 
-                                                 data-sort-type="asc" 
+                                                 onclick="applySort'.$random.'(this)"
+                                                 data-sort="'.$sortValue.'" 
+                                                 data-sort_type="'.((strtolower($sortType) != "asc") ? 'asc' : 'desc').'" 
                                                  title="Sort">'.$dataHeader['head'].'</a>';
+                if($sortTdbit && strtolower($sortType) == "asc"){
+                    $tableHtml                          .= '<i class="glyphicon glyphicon-arrow-down" aria-hidden="true" title="Ascending"></i>';
+                }else if($sortTdbit && strtolower($sortType) == "desc"){
+                    $tableHtml                          .= '<i class="glyphicon glyphicon-arrow-up" aria-hidden="true" title="Descending"></i>';
+                }
            }else{
-                $tableHtml              .= $dataHeader['head'];
+                $tableHtml              .= '<th class="'.((array_key_exists('class', $dataHeader)) ? $dataHeader['class'] : '').'" width="'.((array_key_exists('width', $dataHeader)) ? $dataHeader['width'] : '').'" >'.$dataHeader['head'];
            }
            $tableHtml              .= '</th>';
            }
@@ -118,7 +154,7 @@ class ListTable
            $tableHtml          .= '</tr>';
            
            if(!empty($data['data'])){
-            foreach($data['data'] AS $dataTdItems){
+            foreach($data['data']->data AS $dataTdItems){
                 $tableHtml      .= '<tr>';
                 $assoArray = (array) $dataTdItems;
                 foreach($headerArr AS $eachHeaderColumn){
@@ -145,12 +181,6 @@ class ListTable
            }else{
             $tableHtml          .= '<tr><td class="warning" colspan="'.(count($headerArr) + $actionBit).'"  style="text-align: center; vertical-align: middle;">No Record Found</td></tr>';
            }
-
-
-           
-
-           
-
            $tableHtml       .= '</tbody>'
                         .'</table>';
 
