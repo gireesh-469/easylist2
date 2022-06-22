@@ -298,7 +298,7 @@ Listing::Page(array(
 ));
 ```
 
-##### List Function
+### List Function
 List function is used in the view page. This function directs the control to the URL from where the data should be formatted and shown. It places the resulting list to the desired area of the DOM.
 
 ```sh
@@ -314,9 +314,23 @@ There parameters for list function is mentioned below
 |button_id|ID of the filtering button|
 |autolist|Can have true / false : If true will show the output first time without pressing button|
 |column|Specify the columns of the list|
-|pager|Location where we want to show the page controller|
-|action|To point out the action columns where edit,delete and show links should be shown|
+|data|Provide data returned by the page function here. This is for post back rendering|
+|return_data|This is to specify the data type of page function. Options are : HTML / JSON / OBJECT|             
+|pager|Location where we want to show the page controller. Options : TOP/BOTTOM/BOTH|
+|page_size|Provide the array option for pagination. Default is array(10,25,50,100,250)|             
+|action|To point out the action columns where edit,delete and show links should be shown. Here developer can use {<Table_column_name>} to add values in the script/html|
 
+Options of column 
+
+| Option | Description |
+| ------ | ------ |
+|head|Header for the particular column|
+|column|The param from the JSON response fom which the data has to be taken|
+|width|Width of the column|
+|sort|Which column should be considered for sorting|
+|class|Mention the CSS class|             
+             
+             
 ###### Examples
 **url,form_id,target_div_id,button_id,column,pager**
 These 6 params are mandatory fields for List() function.
@@ -342,13 +356,7 @@ Listing::List(array(
 ```
 ######  Column params
 ####
- | Option | Description |
-| ------ | ------ |
-|head|Header for the particular column|
-|column|The param from the JSON response fom which the data has to be taken|
-|width|Width of the column|
-|sort|Which column should be considered for sorting|
-|class|Mention the CSS class|
+
 
 **autolist**
 ```sh
@@ -393,6 +401,7 @@ Listing::List(array(
                             "sort" => "address")
                        ),
     "pager"          => "BOTH",
+    "return_data"    => "HTML",
     "action"         => array("<a 
                                 href='http://www.test.com/{name}/index'>
                                 <span class='glyphicon glyphicon-pencil'>
@@ -407,7 +416,7 @@ Listing::List(array(
                            )
 ));
 ```
-##### Pager Function 
+### Pager Function 
 Pager function is to show pagination in the listing page.
 
 ```sh
@@ -416,23 +425,13 @@ Listing::Pager();
 | Param | Description |
 | ------ | ------ |
 |page|This is a mandatory parameter.The page object is passed ie the return value from the Page function.|
+|form_id|Provide the form id |
 |page_sizes|The array of values for the different page sizes for listing.|
 
 ##### Examples
-**page**
+**pager**
 ```sh
-$pageObject =   Listing::Page(array(
-                    "select" => "id,name",
-                    "from"   => "user AS usr"
-                ));
-Listing::Pager($pageObject);
-```
-**page_sizes**
-```sh
-$pageObject =   Listing::Page(array(
-                    "select" => "id,name",
-                    "from"   => "user AS usr"
-                ));
-$page_sizes = array(5,10,25,50,100,250);
-Listing::Pager($pageObject,$page_sizes);
-```
+Listing::Pager(array(
+                "page" => $result, 
+                "form_id" => "postbackform", 
+                "page_size" => array(10,25,50,100,250)));
