@@ -72,7 +72,7 @@ DynaList::Page(array());
 There are some parameters that needs to be given in the array. The params are mentioned below
 | Param | Description |
 | ------ | ------ |
-| select |  Comma separated column list |
+| select |  Comma separated column list alongwith alias |
 | from   |  From table with alias       |
 | joins  |  Join statements             |
 | conditions |  Array which consist of the conditions that has to be applied in the <Where> clause. Its to mention extra conditions other than filters |
