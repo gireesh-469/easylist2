@@ -65,7 +65,7 @@ require 'vendor/easylist2/EasyList.php'
 ```
 to the  desired code block.
 
-##### Page Function
+### Page Function
 This function is called from the controller part.
 
 ```sh
@@ -101,6 +101,7 @@ These are the options for filter
 |datetime_format_from|Date time format of th field|-|
 |datetime_format_to|The date time format to which the field value has to be converted|-|
 |consider_empty|If the option consider_empty is YES then the field's condition will be considered for the query created automatically otherwise it will be ruled out. By default this option's value is NO.|YES/NO|
+|type|Option : COMPLEX. This is to include complex query. In this case normal condition array will be added to an array this this option. See the example section|
 
 ``If both conditions and filters options are present filters will have more preference. ``
 
@@ -148,8 +149,7 @@ These are the options for condition
         )
  ));
  ```
-
-
+ 
  **group**
   ```sh
   Listing::Page(array(
@@ -201,6 +201,28 @@ These are the options for condition
         )
  ));
  ```
+ **complex filters**
+ ```sh
+  Listing::Page(array(
+        "select"  => "id,name",
+        "from"    => "customer AS cust",
+        "filters" => array(
+            array("condition" => "cust.name = ?", "form-field" => "txt_name", 
+                 "operation" => "AND", "type"=>"STRING",
+                 "consider_empty" => "YES"),
+            array("condition" => "cust.created_date = ?", "form-field" => "c_date", 
+            "operation" => "OR", "type"=>"DATE", 
+            "datetime_format_from"=>"d/m/Y", "datetime_format_to"=>"Y-m-d", 
+            "consider_empty" => "NO"),
+            array("type"=>"COMPLEX", "operation" => "AND", "condition" =>array(
+               array("condition" => "(cust.name = ?", "form-field" => "txt_name", "operation" => "AND", "type"=>"STRING",
+                   "consider_empty" => "YES"),
+               array("condition" => "cust.area = ?)", "form-field" => "txt_name", "operation" => "AND", "type"=>"STRING",
+                   "consider_empty" => "YES"),
+            )
+        )
+ ));
+ ```             
 
 **order**
 ```sh
