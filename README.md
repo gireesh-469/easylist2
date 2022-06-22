@@ -83,13 +83,36 @@ There are some parameters that needs to be given in the array. The params are me
 | having_columns| Comma separated list of columns used in HAVING cluase.|
 |filters|Array which consist of conditions for the filters from front end|
 |order|Comma separated order coluns with ASC/DESC key |
-|return_data|Format of the data that has to be returned|
-|view|view location if return_data is HTML|
+|return_data|Format of the data that has to be returned. Options are : HTML / JSON / OBJECT / QUERY|
+|view|view location if return_data is HTML. This is for rendering data through ajax when developer want custom tables|
 |view_variables|Array variables that has to be passed to the view|
 |page|page number|
-|pagination|Used to mention whether pagination is present|
+|pagination|Used to mention whether pagination is present. Options : YES / NO|
 |page_size|Number of records that has to be shown in each page|
 
+These are the options for filter
+ 
+| Option | Description |Possible values
+| ------ | ------ |------|
+|condition|The condition which has to be included in the where clause|-|
+|form-field|The field from which the value is taken for the particular condition|-|
+|operation|This option specifies which operation binds the condition to other consitions|AND/OR|
+|type|The type of the form-field|BOOLEAN/DATE/DATETIME/TIME/INTEGER/STRING/ARRAY|
+|datetime_format_from|Date time format of th field|-|
+|datetime_format_to|The date time format to which the field value has to be converted|-|
+|consider_empty|If the option consider_empty is YES then the field's condition will be considered for the query created automatically otherwise it will be ruled out. By default this option's value is NO.|YES/NO|
+
+``If both conditions and filters options are present filters will have more preference. ``
+
+These are the options for condition
+ 
+| Option | Description |Possible values
+| ------ | ------ |------|
+|condition|The condition which has to be included in the where clause|-|
+|value|The values which has to be added to the respective where clause|-|
+|operation|This option specifies which operation binds the condition to other consitions|AND/OR| 
+
+ 
 ###### Examples
  **select**
  ```sh
@@ -125,11 +148,7 @@ There are some parameters that needs to be given in the array. The params are me
         )
  ));
  ```
- | Option | Description |Possible values
-| ------ | ------ |------|
-|condition|The condition which has to be included in the where clause|-|
-|value|The values which has to be added to the respective where clause|-|
-|operation|This option specifies which operation binds the condition to other consitions|AND/OR|
+
 
  **group**
   ```sh
@@ -182,17 +201,6 @@ There are some parameters that needs to be given in the array. The params are me
         )
  ));
  ```
-  | Option | Description |Possible values
-| ------ | ------ |------|
-|condition|The condition which has to be included in the where clause|-|
-|form-field|The field from which the value is taken for the particular condition|-|
-|operation|This option specifies which operation binds the condition to other consitions|AND/OR|
-|type|The type of the form-field|BOOLEAN/DATE/DATETIME/TIME/INTEGER/STRING.|
-|datetime_format_from|Date time format of th field|-|
-|datetime_format_to|The date time format to which the field value has to be converted|-|
-|consider_empty|If the option consider_empty is YES then the field's condition will be considered for the query created automatically otherwise it will be ruled out. By default this option's value is NO.|YES/NO|
-
- ``If both conditions and filters options are present filters will have more preference. ``
 
 **order**
 ```sh
