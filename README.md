@@ -1,6 +1,6 @@
 # PHP EasyList - Version 1.0
 #### by 
-## BTL Team DigitalMesh
+## PHP Team DigitalMesh
 
 
 
@@ -17,14 +17,16 @@ EasyList Supports the following databases
 - MySQL
 - POSTGRESQL
 - MSSQL
+- ORACLE
 
 ### Features
-- Listing can be easily done.
-- Add pagination according to the listing 
-- Provides the auto generated query for listing which in turn helps for debugging.
+- Page control. This will prepare query and apply filter based on the paramters provided. Returns data as Json/Object. This control also provide a feture to see query for debugging
+- Pager control to navigate to different pages 
+- Listing control. This will support both Postback and Ajax rendering
 
 ### Installation
 EasyList is supported in PHP versions 5.6 to 7.4.The plugin requires Bootstrap and JQuery preinstalled.
+
 ##### Using Composer
 If the respective project includes composer EasyList can be added to the project by the following command.
 ```sh 
@@ -67,7 +69,7 @@ to the  desired code block.
 This function is called from the controller part.
 
 ```sh
-DynaList::Page(array());
+Listing::Page(array());
 ```
 There are some parameters that needs to be given in the array. The params are mentioned below
 | Param | Description |
@@ -91,14 +93,14 @@ There are some parameters that needs to be given in the array. The params are me
 ###### Examples
  **select**
  ```sh
- DynaList::Page(array(
+ Listing::Page(array(
         "select" => "id,name" 
  ));
  ```
  
  **from**
  ```sh
-  DynaList::Page(array(
+  Listing::Page(array(
         "select" => "id,name",
         "from"   => "user AS usr"
  ));
@@ -106,7 +108,7 @@ There are some parameters that needs to be given in the array. The params are me
  
  **joins**
  ```sh
-  DynaList::Page(array(
+  Listing::Page(array(
         "select" => "id,name",
         "from"   => "user AS usr",
         "joins"  => " INNER JOIN login AS lgn  ON usr.id = lgn.user_id"
@@ -114,7 +116,7 @@ There are some parameters that needs to be given in the array. The params are me
  ```
  **conditions**
   ```sh
-  DynaList::Page(array(
+  Listing::Page(array(
         "select"     => "id,name",
         "from"       => "user AS usr",
         "conditions" => array(
@@ -131,7 +133,7 @@ There are some parameters that needs to be given in the array. The params are me
 
  **group**
   ```sh
-  DynaList::Page(array(
+  Listing::Page(array(
         "select" => "id,name",
         "from"   => "user AS usr",
         "group"  => "code"
@@ -140,7 +142,7 @@ There are some parameters that needs to be given in the array. The params are me
  
  **having**
   ```sh
-  DynaList::Page(array(
+  Listing::Page(array(
         "select" => "id,name",
         "from"   => "customer AS cust",
         "group"  => "code",
@@ -152,7 +154,7 @@ There are some parameters that needs to be given in the array. The params are me
  
  **having_columns**
    ```sh
-  DynaList::Page(array(
+  Listing::Page(array(
         "select" => "id,name",
         "from"   => "customer AS cust",
         "group"  => "code",
@@ -166,7 +168,7 @@ There are some parameters that needs to be given in the array. The params are me
  
  **filters**
  ```sh
-  DynaList::Page(array(
+  Listing::Page(array(
         "select"  => "id,name",
         "from"    => "customer AS cust",
         "filters" => array(
@@ -194,7 +196,7 @@ There are some parameters that needs to be given in the array. The params are me
 
 **order**
 ```sh
-DynaList::Page(array(
+Listing::Page(array(
     "select" => "id,name",
     "from"   => "customer AS cust",
     "order" => "name ASC"
@@ -203,7 +205,7 @@ DynaList::Page(array(
 
 **return_data**
 ```sh
-DynaList::Page(array(
+Listing::Page(array(
     "select" => "id,name",
     "from"   => "customer AS cust",
     "return_data" => "JSON"
@@ -213,7 +215,7 @@ DynaList::Page(array(
 
 **view**
 ```sh
-DynaList::Page(array(
+Listing::Page(array(
     "select"      => "id,name",
     "from"        => "customer AS cust",
     "return_data" => "HTML"
@@ -222,7 +224,7 @@ DynaList::Page(array(
 ```
 **view_variables**
 ```sh
-DynaList::Page(array(
+Listing::Page(array(
     "select"         => "id,name",
     "from"           => "customer AS cust",
     "return_data"    => "HTML",
@@ -233,7 +235,7 @@ DynaList::Page(array(
 
 **page**
 ```sh
-DynaList::Page(array(
+Listing::Page(array(
     "select"         => "id,name",
     "from"           => "customer AS cust",
     "return_data"    => "HTML",
@@ -244,7 +246,7 @@ DynaList::Page(array(
 ```
 **pagination**
 ```sh
-DynaList::Page(array(
+Listing::Page(array(
     "select"         => "id,name",
     "from"           => "customer AS cust",
     "return_data"    => "JSON",
@@ -256,7 +258,7 @@ DynaList::Page(array(
 
 **page_size**
 ```sh
-DynaList::Page(array(
+Listing::Page(array(
     "select"         => "id,name",
     "from"           => "customer AS cust",
     "return_data"    => "JSON",
@@ -270,7 +272,7 @@ DynaList::Page(array(
 List function is used in the view page. This function directs the control to the URL from where the data should be formatted and shown. It places the resulting list to the desired area of the DOM.
 
 ```sh
-DynaList::List(array());
+Listing::List(array());
 ```
 
 There parameters for list function is mentioned below
@@ -289,7 +291,7 @@ There parameters for list function is mentioned below
 **url,form_id,target_div_id,button_id,column,pager**
 These 6 params are mandatory fields for List() function.
 ```sh
-DynaList::List(array(
+Listing::List(array(
     "url"           => "customer/list",
     "form_id"       => "user_filter_form",
     "target_div_id" => "user_list_div",
@@ -320,7 +322,7 @@ DynaList::List(array(
 
 **autolist**
 ```sh
-DynaList::List(array(
+Listing::List(array(
     "url"           => "customer/list",
     "form_id"       => "user_filter_form",
     "target_div_id" => "user_list_div",
@@ -344,7 +346,7 @@ DynaList::List(array(
 
 **action**
 ```sh
-DynaList::List(array(
+Listing::List(array(
     "url"           => "customer/list",
     "form_id"       => "user_filter_form",
     "target_div_id" => "user_list_div",
@@ -379,7 +381,7 @@ DynaList::List(array(
 Pager function is to show pagination in the listing page.
 
 ```sh
-DynaList::Pager();
+Listing::Pager();
 ```
 | Param | Description |
 | ------ | ------ |
@@ -389,18 +391,18 @@ DynaList::Pager();
 ##### Examples
 **page**
 ```sh
-$pageObject =   DynaList::Page(array(
+$pageObject =   Listing::Page(array(
                     "select" => "id,name",
                     "from"   => "user AS usr"
                 ));
-DynaList::Pager($pageObject);
+Listing::Pager($pageObject);
 ```
 **page_sizes**
 ```sh
-$pageObject =   DynaList::Page(array(
+$pageObject =   Listing::Page(array(
                     "select" => "id,name",
                     "from"   => "user AS usr"
                 ));
 $page_sizes = array(5,10,25,50,100,250);
-DynaList::Pager($pageObject,$page_sizes);
+Listing::Pager($pageObject,$page_sizes);
 ```
