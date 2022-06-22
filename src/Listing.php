@@ -97,8 +97,8 @@ class Listing
         if(!isset($options['select']) || trim($options['select']) == "" || !isset($options['from']) || trim($options['from']) == "" ){
             throw new EasyListException("Select OR From clause is missing.");
         } else {
-            $select = "SELECT " . $options['select'];
-            $sql .= " FROM " . $options['from'];
+            $select = "SELECT " . $options['select'] . " ";
+            $sql .= " FROM " . $options['from']  . " ";
         }
         
         if(isset($options['joins']) && $options['joins'] !=""){
@@ -379,6 +379,7 @@ class Listing
                                 array("head" => "Address", "column" => "a_state", "width" => '40%', "class" => "","sort" => "address")
                            ),
         "data"           => <Data retruned by the Page function>
+        "return_data"    => "<HTML / JSON / OBJECT>"
         "pager"          => "TOP / BOTTOM / BOTH", //Location where we want to show the page controller 
         'page_size'      => <pagination sizes. Default is array(10,25,50,100,250) >,
                             //Action colum where we can add edit/delete buttons 
