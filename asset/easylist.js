@@ -3,10 +3,9 @@ var headerColums = [];
 var form = "";
 var button = "";
 $(document).ready(function(){
-
+	if($('#easylist-config').length > 0){
 	function getConfiguration(type=''){
 		
-		if($('#easylist-config').length > 0){
 			header = isJsonObject(decodeURIComponent($('#easylist-config').val()));
 			form = header.form_id;
 			button = header.button_id;
@@ -18,7 +17,6 @@ $(document).ready(function(){
 			if(header && header.autolist == true){
 				getCoreData();
 			}
-		}
 	}
 	getConfiguration();
 	$(document).on('click', '#'+button , function(e){
@@ -42,7 +40,7 @@ $(document).ready(function(){
 				dataType : 'json',
 				data : $('#'+form).serialize().replace(/%5B%5D/g,'[]'),
 				beforeSend: function() {
-					$('#'+header.target_div_id).html('<i class="fa fa-spinner fa-spin" style="font-size: 300px;color: #e7e7e7;"></i>');
+					$('#'+header.target_div_id).html('<section><div class="loader"><span style="--i: 6"></span><span style="--i: 7"></span><span style="--i: 8"></span><span style="--i: 9"></span><span style="--i: 10"></span><span style="--i: 11"></span><span style="--i: 12"></span><span style="--i: 13"></span><span style="--i: 14"></span><span style="--i: 15"></span><span style="--i: 16"></span><span style="--i: 17"></span><span style="--i: 18"></span><span style="--i: 19"></span><span style="--i: 20"></span></div></section>');
 				},
 				success : function(response) {
 					var table = "";
@@ -254,15 +252,15 @@ function applySortClass(){
 	$('.text-center').removeClass('sortClass-th');
 	$('a[data-sort="'+$('#sort').val()+'"]').parent('th').addClass('sortClass-th');
 	if($('#sort_type').val() == 'asc'){
-		var imgUrl = 'glyphicon glyphicon-arrow-down';
+		var imgUrl = 'sort-by-asc';
 		var title = 'Ascending';
 	}else{
-		var imgUrl = 'glyphicon glyphicon-arrow-up';
+		var imgUrl = 'sort-by-desc';
 		var title = 'Descending';
 	}
 	var ImgSrc  = $('a[data-sort="'+$('#sort').val()+'"]').siblings('.fa');
 	ImgSrc.removeClass().addClass(imgUrl);
 	ImgSrc.attr('title',title);
 }
-
+}
 });//end of document ready

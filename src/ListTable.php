@@ -131,6 +131,7 @@ class ListTable
                 $sortTdbit = ($sortValue == $isSortApply) ? true : false;
                 $tableHtml              .= '<th class="'.(($sortTdbit) ? 'sortClass-th' : '').' '.((array_key_exists('class', $dataHeader)) ? $dataHeader['class'] : '').'" 
                                             width="'.((array_key_exists('width', $dataHeader)) ? $dataHeader['width'] : '').'" >
+                                            
                                              <a  href="javascript:void(0)"
                                                  class="sortClass"
                                                  onclick="applySort'.$random.'(this)"
@@ -138,9 +139,9 @@ class ListTable
                                                  data-sort_type="'.((strtolower($sortType) != "asc") ? 'asc' : 'desc').'" 
                                                  title="Sort">'.$dataHeader['head'].'</a>';
                 if($sortTdbit && strtolower($sortType) == "asc"){
-                    $tableHtml                          .= '<i class="glyphicon glyphicon-arrow-down" aria-hidden="true" title="Ascending"></i>';
+                    $tableHtml                          .= '<i class="sort-by-asc" title="Ascending"></i>';
                 }else if($sortTdbit && strtolower($sortType) == "desc"){
-                    $tableHtml                          .= '<i class="glyphicon glyphicon-arrow-up" aria-hidden="true" title="Descending"></i>';
+                    $tableHtml                          .= '<i class="sort-by-desc" title="Descending"></i>';
                 }
            }else{
                 $tableHtml              .= '<th class="'.((array_key_exists('class', $dataHeader)) ? $dataHeader['class'] : '').'" width="'.((array_key_exists('width', $dataHeader)) ? $dataHeader['width'] : '').'" >'.$dataHeader['head'];
@@ -158,7 +159,7 @@ class ListTable
                 $tableHtml      .= '<tr>';
                 $assoArray = (array) $dataTdItems;
                 foreach($headerArr AS $eachHeaderColumn){
-                    if(array_key_exists($eachHeaderColumn, $assoArray)){ $tableHtml       .= '<td class="text-left">'.$assoArray[$eachHeaderColumn].'</td>';}
+                    if(array_key_exists($eachHeaderColumn, $assoArray)){ $tableHtml       .= '<td class="text-left">'. htmlentities($assoArray[$eachHeaderColumn]).'</td>';}
                     else{ $tableHtml       .= '<td class="text-left"></td>'; }
                 }
                 if(array_key_exists('action', $data)){

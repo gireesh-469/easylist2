@@ -1,9 +1,14 @@
 .sortClass-th{
   border-bottom-color: red !important;
+  color: #428bca  !important;
+}
+
+.sortClass-th .sortClass{
+  color: #428bca  !important;
 }
 
 .sortClass{
-  color: #000000  !important;
+  color: #428bca  !important;
 }
 .custom-pagination {
     top: 0 !important;
@@ -55,6 +60,91 @@
   th {
     padding: 10px 2px !important;
   }
-  
+
+  .glyphicon-forward,.glyphicon-step-forward,.glyphicon-backward,.glyphicon-step-backward{
+    font-size: 18px;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 52vh;
+}
+
+.loader {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    animation: animateBg;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes animateBg {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loader span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background-color: bisque; */
+    transform: rotate(calc(18deg * var(--i)));
+}
+
+.loader span::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(15px * (var(--i) / 20));
+    height: calc(15px * (var(--i) / 20));
+    border-radius: 50%;
+    background-color: rgb(133, 130, 130);
+}
+
+.sort-by-asc
+{
+    left: 3px;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: solid 5px transparent;
+    margin: 4px 4px 0 3px;
+    background: transparent;
+    border-bottom: solid 7px #428bd5;
+    border-top-width: 0;
+}
+
+.sort-by-desc
+{
+    left: 3px;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: solid 5px transparent;
+    margin: 4px 4px 0 3px;
+    background: transparent;
+    border-top: solid 7px #428bd5;
+    border-bottom-width: 0;
+}
  
 
