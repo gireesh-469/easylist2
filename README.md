@@ -6,22 +6,22 @@
 
 ### Introduction
 
-EasyList is a PHP plugin which lets the developer to implement listing,pagination and filtering with less code and effort.With the help of composer the plugin can be added to projects which are developed using any frameworks in PHP which makes EasyList versatile.
+EasyList is a PHP plugin which lets the developer to implement listing,pagination and filtering with less code and effort. With the help of composer the plugin can be included to the projects which are developed using any frameworks in PHP which makes EasyList versatile.
 
 ### Requirements
 - PHP version supported from 5.6 to 7.4(Testing is in progress for PHP 8)
 - JQuery and Bootstrap
 
 ### Supporting Databases
-EasyList Supports the following databases
+EasyList supports the following databases
 - MySQL
 - POSTGRESQL
 - MSSQL
 - ORACLE
 
 ### Features
-- Page control. This will prepare query and apply filter based on the paramters provided. Returns data as Json/Object. This control also provide a feture to see query for debugging
-- Pager control to navigate to different pages 
+- Page control. This will prepare query and apply filter based on the paramters provided and returns data as Json/Object. This control also provides a feature to get the SQL query for debugging
+- Pager control is to navigate to different pages 
 - Listing control. This will support both Postback and Ajax rendering
 
 ### Installation
@@ -71,37 +71,37 @@ This function is called from the controller part.
 ```sh
 Listing::Page(array());
 ```
-There are some parameters that needs to be given in the array. The params are mentioned below
+There are some parameters that need to be given in the array. The params are mentioned below
 | Param | Description |
 | ------ | ------ |
-| select |  Comma separated column list alongwith alias |
+| select |  Comma separated column list along with alias |
 | from   |  From table with alias       |
 | joins  |  Join statements             |
-| conditions |  Array which consist of the conditions that has to be applied in the <Where> clause. Its to mention extra conditions other than filters |
+| conditions |  Array which consists of the conditions that has to be applied in the ***<WHERE>*** clause. Its to mention extra conditions other than filters |
 | group | Comma separated group names  |
-| having| Array which consist of the conditions and values for <having> clause|
-| having_columns| Comma separated list of columns used in HAVING cluase.|
-|filters|Array which consist of conditions for the filters from front end|
-|order|Comma separated order coluns with ASC/DESC key |
-|return_data|Format of the data that has to be returned. Options are : HTML / JSON / OBJECT / QUERY|
-|view|view location if return_data is HTML. This is for rendering data through ajax when developer want custom tables|
+| having| Array which consists of the conditions and values for ***<HAVING>*** clause|
+| having_columns| Comma separated list of columns used in the ***HAVING*** clause.|
+|filters|Array which consists of conditions for the filters from the front end|
+|order|Comma separated order columns with **ASC/DESC** key |
+|return_data|Format of the data that has to be returned. Options are : ***HTML / JSON / OBJECT / QUERY***|
+|view|view location if return_data is HTML. This is for rendering data through ajax when developer wants custom tables|
 |view_variables|Array variables that has to be passed to the view|
 |page|page number|
-|pagination|Used to mention whether pagination is present. Options : YES / NO|
+|pagination|Used to mention whether pagination is present or not. Options : ***YES / NO***|
 |page_size|Number of records that has to be shown in each page|
 
 These are the options for filter
  
 | Option | Description |Possible values
 | ------ | ------ |------|
-|condition|The condition which has to be included in the where clause|-|
+|condition|The condition which has to be included in the ***WHERE*** clause|-|
 |form-field|The field from which the value is taken for the particular condition|-|
-|operation|This option specifies which operation binds the condition to other consitions|AND/OR|
-|type|The type of the form-field|BOOLEAN/DATE/DATETIME/TIME/INTEGER/STRING/ARRAY|
+|operation|This option specifies which operation binds the condition to other consitions|***AND/OR***|
+|type|The type of the form-field|***BOOLEAN/DATE/DATETIME/TIME/INTEGER/STRING/ARRAY**|
 |datetime_format_from|Date time format of th field|-|
 |datetime_format_to|The date time format to which the field value has to be converted|-|
-|consider_empty|If the option consider_empty is YES then the field's condition will be considered for the query created automatically otherwise it will be ruled out. By default this option's value is NO.|YES/NO|
-|type|Option : COMPLEX. This is to include complex query. In this case normal condition array will be added to an array this this option. See the example section|
+|consider_empty|If the option consider_empty is YES then the field's condition will be considered for the query created automatically otherwise it will be ruled out. By default this option's value is NO.|***YES/NO***|
+|type|Option : COMPLEX. This is to include complex query. In this case normal condition array will be added to an array this option. See the example section|-|
 
 ``If both conditions and filters options are present filters will have more preference. ``
 
@@ -109,9 +109,9 @@ These are the options for condition
  
 | Option | Description |Possible values
 | ------ | ------ |------|
-|condition|The condition which has to be included in the where clause|-|
-|value|The values which has to be added to the respective where clause|-|
-|operation|This option specifies which operation binds the condition to other consitions|AND/OR| 
+|condition|The condition which has to be included in the ***WHERE*** clause|-|
+|value|The values which has to be added to the respective ***WHERE*** clause|-|
+|operation|This option specifies which operation binds the condition to other consitions|***AND/OR***| 
 
  
 ###### Examples
@@ -215,9 +215,11 @@ These are the options for condition
             "datetime_format_from"=>"d/m/Y", "datetime_format_to"=>"Y-m-d", 
             "consider_empty" => "NO"),
             array("type"=>"COMPLEX", "operation" => "AND", "condition" =>array(
-               array("condition" => "(cust.name = ?", "form-field" => "txt_name", "operation" => "AND", "type"=>"STRING",
+               array("condition" => "(cust.name = ?", 
+               "form-field" => "txt_name", "operation" => "AND", "type"=>"STRING",
                    "consider_empty" => "YES"),
-               array("condition" => "cust.area = ?)", "form-field" => "txt_name", "operation" => "AND", "type"=>"STRING",
+               array("condition" => "cust.area = ?)", "form-field" => "txt_name",
+               "operation" => "AND", "type"=>"STRING",
                    "consider_empty" => "YES"),
             )
         )
@@ -312,13 +314,13 @@ There parameters for list function is mentioned below
 |form_id|Id of the filter form|
 |target_div_id|Div id where we want to show the output|
 |button_id|ID of the filtering button|
-|autolist|Can have true / false : If true will show the output first time without pressing button|
+|autolist|Can have true / false : If true will show the output first time without pressing the button|
 |column|Specify the columns of the list|
-|data|Provide data returned by the page function here. This is for post back rendering|
-|return_data|This is to specify the data type of page function. Options are : HTML / JSON / OBJECT|             
-|pager|Location where we want to show the page controller. Options : TOP/BOTTOM/BOTH|
-|page_size|Provide the array option for pagination. Default is array(10,25,50,100,250)|             
-|action|To point out the action columns where edit,delete and show links should be shown. Here developer can use {<Table_column_name>} to add values in the script/html|
+|data|Provides data returned by the page function here. This is for post back rendering|
+|return_data|This is to specify the data type of page function. Options are : ***HTML / JSON / OBJECT***|             
+|pager|Location where we want to show the page controller. Options : ***TOP/BOTTOM/BOTH***|
+|page_size|ProvideS the array option for pagination. The Default is ***array(10,25,50,100,250)***|             
+|action|To point out the action columns where edit,delete and show links should be shown. Here developer can use ***{<Table_column_name>}*** to add values in the script/html|
 
 Options of column 
 
@@ -425,7 +427,7 @@ Listing::Pager();
 | Param | Description |
 | ------ | ------ |
 |page|This is a mandatory parameter.The page object is passed ie the return value from the Page function.|
-|form_id|Provide the form id |
+|form_id|The form id should be given in this param|
 |page_sizes|The array of values for the different page sizes for listing.|
 
 ##### Examples
