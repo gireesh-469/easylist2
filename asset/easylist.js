@@ -157,19 +157,19 @@ function displayPaginationHTML(json_data){
 
 	var html = `<div class="custom-pagination">
 					<a href="javascript:void(0)" class="first-page enabled" title="First" data-page="1">
-      					<span class="glyphicon glyphicon-step-backward"></span>
+      					<span class="ic ic-skip-prev"></span>
     				</a>
     				<a href="javascript:void(0)" class="prev-page enabled" title="Previous" data-page="`+prev_page+`">
-      					<span class="glyphicon glyphicon-backward"></span>
+      					<span class="ic ic-fastforward-prev"></span>
     				</a>
     				<div class="pagedisplay">
       					Records `+min+` to `+max+` (Total `+total_count+` Results) - Page `+current_page+` of `+total_pages+`
     				</div>
     				<a href="javascript:void(0)" class="next-page enabled" title="Next" data-page="`+next_page+`">
-      					<span class="glyphicon glyphicon-forward"></span>
+      					<span class="ic ic-fastforward"></span>
     				</a>
     				<a href="javascript:void(0)" class="last-page enabled" title="Last" data-page="`+total_pages+`">
-      					<span class="glyphicon glyphicon-step-forward"></span>
+      					<span class="ic ic-skip"></span>
     				</a>
 					<select class="page-limit">
 						<option value="10" `+(page_size == 10 ? "selected" : "")+`>10</option>

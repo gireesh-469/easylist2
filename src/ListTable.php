@@ -30,19 +30,19 @@ class ListTable
         
         $html = "<div class='custom-pagination'>
 					<a href='javascript:void(0)' class='first-page enabled' title='First' data-page='1' onclick='pagination{$random}(1,this,{$page->page_size},{$page->total_records})'>
-      					<span class='glyphicon glyphicon-step-backward'></span>
+                        <span class='ic ic-skip-prev'></span>
     				</a>
     				<a href='javascript:void(0)' class='prev-page enabled' title='Previous' data-page='{$page->prev_page}' onclick='pagination{$random}({$page->prev_page},this,{$page->page_size},{$page->total_records})'>
-      					<span class='glyphicon glyphicon-backward'></span>
+                        <span class='ic ic-fastforward-prev'></span>
     				</a>
     				<div class='pagedisplay'>
       					Records {$min} to {$max} (Total {$page->total_records} Results) - Page {$page->page} of {$page->total_pages}
     				</div>
     				<a href='javascript:void(0)' class='next-page enabled' title='Next' data-page='{$page->next_page}' onclick='pagination{$random}({$page->next_page},this,{$page->page_size},{$page->total_records})'>
-      					<span class='glyphicon glyphicon-forward'></span>
+      					<span class='ic ic-fastforward'></span>
     				</a>
     				<a href='javascript:void(0)' class='last-page enabled' title='Last' data-page='{$page->last_page}' onclick='pagination{$random}({$page->last_page},this,{$page->page_size},{$page->total_records})'>
-      					<span class='glyphicon glyphicon-step-forward'></span>
+      					<span class='ic ic-skip'></span>
     				</a>
 					<select class='page-limit' onchange=paginationBySize{$random}({$page->page},this,{$page->total_records})>{$sizeOptions}</select>
   				</div>";
