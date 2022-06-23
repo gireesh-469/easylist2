@@ -16,5 +16,5 @@ $db = array(
 /*
  * This can be edited to change the configuration location
  */
-$configPath = 'app/config/EasyListConfig.php';
+$configPath = dirname(__FILE__, 5).'/app/config/EasyListConfig.php';
 
