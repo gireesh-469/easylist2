@@ -408,7 +408,7 @@ class Listing
                   throw new EasyListException("Required parameters missing. Check these parameter : url, form_id, target_div_id, button_id, column, pager.");
             }
             
-            if(!array_key_exists('column', $config)){
+            if(array_key_exists('column', $config)){
                 $config['column'] = array_map(function($obj){ $obj['sort'] = base64_encode(trim($obj['sort'])); return $obj; }, $config['column']);
             }
             
