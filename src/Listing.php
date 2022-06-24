@@ -447,7 +447,9 @@ class Listing
             
             //Print pager at Top
             if($pager == "TOP" || $pager == "BOTH"){
-                echo $pagerData;
+                if($config['data']->total_records > $config['data']->page_size){
+                    echo $pagerData;
+                }
             }
             
             //Print table & Script
@@ -456,7 +458,9 @@ class Listing
             
             //Print pager at Bottom
             if($pager == "BOTTOM" || $pager == "BOTH"){
-                echo $pagerData;
+                if($config['data']->total_records > $config['data']->page_size){
+                    echo $pagerData;
+                }
             }
         }
     }
@@ -482,12 +486,14 @@ class Listing
             throw new EasyListException("Form_id should not be NULL");
         }
         
-        $table   = new ListTable();
-        $pager   = $table->pager($page, $formid, $page_sizes, $random);
-        $scripts = $table->jsScripts($random, $formid);
-        
-        echo $pager;
-        echo $scripts;
+        if($page->total_records > $page->page_size){
+            $table   = new ListTable();
+            $pager   = $table->pager($page, $formid, $page_sizes, $random);
+            $scripts = $table->jsScripts($random, $formid);
+            
+            echo $pager;
+            echo $scripts;
+        }
     }
     
 }

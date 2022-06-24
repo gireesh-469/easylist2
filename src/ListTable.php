@@ -43,7 +43,7 @@ class ListTable
     				</a>
     				<a href='javascript:void(0)' class='last-page enabled' title='Last' data-page='{$page->last_page}' onclick='pagination{$random}({$page->last_page},this,{$page->page_size},{$page->total_records})'>
       					<span class='ic ic-skip'></span>
-    				</a>
+    				</a>&nbsp;
 					<select class='page-limit' onchange=paginationBySize{$random}({$page->page},this,{$page->total_records})>{$sizeOptions}</select>
   				</div>";
         
@@ -154,7 +154,7 @@ class ListTable
            }
            $tableHtml          .= '</tr>';
            
-           if(!empty($data['data'])){
+           if(!empty($data['data']->data)){
             foreach($data['data']->data AS $dataTdItems){
                 $tableHtml      .= '<tr>';
                 $assoArray = (array) $dataTdItems;
