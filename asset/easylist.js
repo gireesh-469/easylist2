@@ -1,5 +1,7 @@
 var header = {};
 var headerColums = [];
+var dateColumns = [];
+var boolColumns = []
 var form = "";
 var button = "";
 $(document).ready(function(){
@@ -77,8 +79,21 @@ $(document).ready(function(){
 					var eachHtmlItems =  "";
 					table +="<tr>";
 					$.each(witem, function (key, val) {
+						actual_value = val;
 						if($.inArray(key, headerColums)  !== -1){
-							table +='<td class="text-left">'+val+'</td>';
+							if(dateColumns[key] != ''){
+								actual_value = val ? getFormattedDate(val,"yy-mm-dd","dd/mm/yy") : '';
+							}
+
+							if(boolColumns[key] != ''){
+								if(boolColumns[key] == 'YesNo'){
+									actual_value = val == true || val == 1 ? 'Yes' : 'No';
+								}
+								else{
+									actual_value = val ? 'True' : 'False';
+								}
+							}
+							table +='<td class="text-left">'+actual_value+'</td>';
 						}
 					});
 					if(hasAction){
@@ -119,6 +134,17 @@ $(document).ready(function(){
 					table += '<a href="javascript:void(0)" class="sortClass" data-sort="'+item.sort+'" data-sort-type="asc" title="Sort">'+item.head+'</a>&nbsp<i class="fa fa-lg" aria-hidden="true"></i>';
 				}else{
 					table += item.head;
+				}
+				// check date format and boolean
+				if(item.date_format != undefined && item.date_format !=''){
+					dateColumns[item.column] = item.date_format;
+				}else{
+					dateColumns[item.column] = '';
+				}
+				if(item.boolean_format != undefined && item.boolean_format !=''){
+					boolColumns[item.column] = item.boolean_format;
+				}else{
+					boolColumns[item.column] = '';
 				}
 				headerColums.push(item.column);
 				table += '</th>';
@@ -265,3 +291,16 @@ function applySortClass(){
 }
 }
 });//end of document ready
+
+function getFormattedDate(date_string, converting_format = "dd/mm/yy", current_format = "yy-mm-dd"){
+	current_format = current_format.replace(/\//g, "-");
+	date_string = date_string.replace(/\//g, "-");
+	var dt_split = date_string.split('-');
+	dt_arr = current_format.split('-');
+	var dt_date = parseInt(dt_split[dt_arr.indexOf('dd')]);
+	var dt_month = parseInt(dt_split[dt_arr.indexOf('mm')]);
+	var dt_year = parseInt(dt_split[dt_arr.indexOf('yy')]);
+	return converting_format.replace("yy", dt_year)
+							.replace("mm", (dt_month.toString().length == 1? "0": "") + dt_month)
+							.replace("dd", (dt_date.toString().length == 1? "0": "") + dt_date);
+}

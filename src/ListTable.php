@@ -124,29 +124,30 @@ class ListTable
                             .'<tbody>'
                                 .'<tr>';
             foreach($data['column'] AS $dataHeader){
-            $headerArr[] = $dataHeader['column'];
-            
-            if(array_key_exists('sort', $dataHeader)){
-                $sortValue = base64_encode(trim($dataHeader['sort']));
-                $sortTdbit = ($sortValue == $isSortApply) ? true : false;
-                $tableHtml              .= '<th class="'.(($sortTdbit) ? 'sortClass-th' : '').' '.((array_key_exists('class', $dataHeader)) ? $dataHeader['class'] : '').'" 
-                                            width="'.((array_key_exists('width', $dataHeader)) ? $dataHeader['width'] : '').'" >
-                                            
-                                             <a  href="javascript:void(0)"
-                                                 class="sortClass"
-                                                 onclick="applySort'.$random.'(this)"
-                                                 data-sort="'.$sortValue.'" 
-                                                 data-sort_type="'.((strtolower($sortType) != "asc") ? 'asc' : 'desc').'" 
-                                                 title="Sort">'.$dataHeader['head'].'</a>';
-                if($sortTdbit && strtolower($sortType) == "asc"){
-                    $tableHtml                          .= '<i class="sort-by-asc" title="Ascending"></i>';
-                }else if($sortTdbit && strtolower($sortType) == "desc"){
-                    $tableHtml                          .= '<i class="sort-by-desc" title="Descending"></i>';
+                $headerArr[] = $dataHeader['column'];
+                $extraArr[$dataHeader['column']]['date_format'] = isset($dataHeader['date_format']) ? $dataHeader['date_format'] : '';
+                $extraArr[$dataHeader['column']]['boolean_format'] = isset($dataHeader['boolean_format']) ? $dataHeader['boolean_format'] : '';
+                if(array_key_exists('sort', $dataHeader)){
+                    $sortValue = base64_encode(trim($dataHeader['sort']));
+                    $sortTdbit = ($sortValue == $isSortApply) ? true : false;
+                    $tableHtml              .= '<th class="'.(($sortTdbit) ? 'sortClass-th' : '').' '.((array_key_exists('class', $dataHeader)) ? $dataHeader['class'] : '').'" 
+                                                width="'.((array_key_exists('width', $dataHeader)) ? $dataHeader['width'] : '').'" >
+                                                
+                                                <a  href="javascript:void(0)"
+                                                    class="sortClass"
+                                                    onclick="applySort'.$random.'(this)"
+                                                    data-sort="'.$sortValue.'" 
+                                                    data-sort_type="'.((strtolower($sortType) != "asc") ? 'asc' : 'desc').'" 
+                                                    title="Sort">'.$dataHeader['head'].'</a>';
+                    if($sortTdbit && strtolower($sortType) == "asc"){
+                        $tableHtml                          .= '<i class="sort-by-asc" title="Ascending"></i>';
+                    }else if($sortTdbit && strtolower($sortType) == "desc"){
+                        $tableHtml                          .= '<i class="sort-by-desc" title="Descending"></i>';
+                    }
+                }else{
+                        $tableHtml              .= '<th class="'.((array_key_exists('class', $dataHeader)) ? $dataHeader['class'] : '').'" width="'.((array_key_exists('width', $dataHeader)) ? $dataHeader['width'] : '').'" >'.$dataHeader['head'];
                 }
-           }else{
-                $tableHtml              .= '<th class="'.((array_key_exists('class', $dataHeader)) ? $dataHeader['class'] : '').'" width="'.((array_key_exists('width', $dataHeader)) ? $dataHeader['width'] : '').'" >'.$dataHeader['head'];
-           }
-           $tableHtml              .= '</th>';
+                $tableHtml              .= '</th>';
            }
            if(array_key_exists('action', $data)){
                 $tableHtml .= '<th class="text-center">Action</th>';
@@ -159,7 +160,20 @@ class ListTable
                 $tableHtml      .= '<tr>';
                 $assoArray = (array) $dataTdItems;
                 foreach($headerArr AS $eachHeaderColumn){
-                    if(array_key_exists($eachHeaderColumn, $assoArray)){ $tableHtml       .= '<td class="text-left">'. htmlentities($assoArray[$eachHeaderColumn]).'</td>';}
+                    if(array_key_exists($eachHeaderColumn, $assoArray)){ 
+                        if(!empty($extraArr[$eachHeaderColumn]['date_format']) && !empty($assoArray[$eachHeaderColumn])){
+                            $value = date($extraArr[$eachHeaderColumn]['date_format'],strtotime($assoArray[$eachHeaderColumn]));
+                        }else if(!empty($extraArr[$eachHeaderColumn]['boolean_format'])){
+                            if($extraArr[$eachHeaderColumn]['boolean_format'] == 'YesNo'){
+                                $value = $assoArray[$eachHeaderColumn] ? 'Yes' : 'No';
+                            }else{
+                                $value = $assoArray[$eachHeaderColumn] ? 'True' : 'False';
+                            }
+                        }else{
+                            $value = htmlentities($assoArray[$eachHeaderColumn]);
+                        }
+                        $tableHtml       .= '<td class="text-left">'.$value.'</td>';
+                    }
                     else{ $tableHtml       .= '<td class="text-left"></td>'; }
                 }
                 if(array_key_exists('action', $data)){
