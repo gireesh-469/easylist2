@@ -1,7 +1,7 @@
 var header = {};
 var headerColums = [];
 var dateColumns = [];
-var boolColumns = []
+var boolColumns = [];
 var form = "";
 var button = "";
 $(document).ready(function(){
@@ -78,19 +78,26 @@ $(document).ready(function(){
 				$.each(widgetData.data, function (i, witem) {
 					var eachHtmlItems =  "";
 					table +="<tr>";
-					$.each(witem, function (key, val) {
-						actual_value = val;
-						if($.inArray(key, headerColums)  !== -1){
+					$.each(headerColums, function (keyhead, val) {
+						
+						if(witem.hasOwnProperty(val)){
+							actual_value = witem[val];
+							var key = val;
 							if(dateColumns[key] != ''){
-								actual_value = val ? getFormattedDate(val,"yy-mm-dd","dd/mm/yy") : '';
+								actual_value = witem[val] ? 
+									getFormattedDate(
+										witem[val],
+										dateColumns[key]['to_format']? dateColumns[key]['to_format']: "dd/mm/yy",
+										dateColumns[key]['from_format'] ? dateColumns[key]['from_format']: "yy-mm-dd"
+										) : '';
 							}
 
 							if(boolColumns[key] != ''){
 								if(boolColumns[key] == 'YesNo'){
-									actual_value = val == true || val == 1 ? 'Yes' : 'No';
+									actual_value = witem[val] == true || witem[val] == 1 ? 'Yes' : 'No';
 								}
 								else{
-									actual_value = val ? 'True' : 'False';
+									actual_value = witem[val] ? 'True' : 'False';
 								}
 							}
 							table +='<td class="text-left">'+actual_value+'</td>';
@@ -122,6 +129,8 @@ $(document).ready(function(){
 
 	function generateWidgetHeader(tableheader){
 		var table = '';
+		dateColumns = [];
+		boolColumns = [];
 		$.each(tableheader, function (i, item) {
 			if( item.hasOwnProperty('head') && item.hasOwnProperty('column') ){
 				table += '<th ';
@@ -136,11 +145,16 @@ $(document).ready(function(){
 					table += item.head;
 				}
 				// check date format and boolean
-				if(item.date_format != undefined && item.date_format !=''){
-					dateColumns[item.column] = item.date_format;
+				if(item.js_date_format_from != undefined && item.js_date_format_from !=''){
+					dateColumns[item.column] = {from_format: item.js_date_format_from};
 				}else{
 					dateColumns[item.column] = '';
 				}
+				
+				if(dateColumns[item.column] && item.js_date_format_to != undefined && item.js_date_format_to !=''){
+					dateColumns[item.column]['to_format'] = item.js_date_format_to;
+				}
+
 				if(item.boolean_format != undefined && item.boolean_format !=''){
 					boolColumns[item.column] = item.boolean_format;
 				}else{
