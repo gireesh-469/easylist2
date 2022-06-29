@@ -129,6 +129,7 @@ $(document).ready(function(){
 
 	function generateWidgetHeader(tableheader){
 		var table = '';
+		headerColums = [];
 		dateColumns = [];
 		boolColumns = [];
 		$.each(tableheader, function (i, item) {
