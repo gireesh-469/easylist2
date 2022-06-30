@@ -81,7 +81,7 @@ $(document).ready(function(){
 					$.each(headerColums, function (keyhead, val) {
 						
 						if(witem.hasOwnProperty(val)){
-							actual_value = witem[val];
+							actual_value = (witem[val] == null) ? ''  :  witem[val];
 							var key = val;
 							if(dateColumns[key] != ''){
 								actual_value = witem[val] ? 
