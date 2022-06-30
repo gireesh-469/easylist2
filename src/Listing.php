@@ -143,7 +143,7 @@ class Listing
             if($pagination == "YES"){
                 if($total_records == 0){
                     try{
-                        $stmt = self::$connection->prepare("SELECT COUNT(*) AS count {$having_columns} FROM (SELECT 1 " . $count_sql . ") AS query");
+                        $stmt = self::$connection->prepare("SELECT COUNT(*) AS count {$having_columns} FROM (SELECT 1 AS count " . $count_sql . ") AS query");
                         $stmt->execute();
                         $rec = $stmt->fetch(PDO::FETCH_ASSOC);
                         
@@ -175,7 +175,11 @@ class Listing
                             $sql .= " LIMIT {$offset},{$page_size} ";
                             break;
                         case 'SQLSRV':
-                            $sql .= " LIMIT {$page_size} OFFSET {$offset} ";
+                            if($offset <= 0){
+                                $sql .= " OFFSET 0 ROWS FETCH NEXT {$page_size} ROWS ONLY ";
+                            } else {
+                                $sql .= " OFFSET {$offset} ROWS FETCH NEXT {$page_size} ROWS ONLY ";
+                            }
                             break;
                         case 'ORACLE':
                             if($offset <= 0){

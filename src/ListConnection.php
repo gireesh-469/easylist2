@@ -56,7 +56,8 @@ class ListConnection
                     $this->conn = new PDO("mysql:host=$this->host;dbname=$this->database", $this->username, $this->password);
                     break;
                 case 'SQLSRV':
-                    $this->conn = new PDO( "sqlsrv:server=$this->host;Database=$this->database", $this->username, $this->password);
+                     //$this->conn = new PDO( "sqlsrv:Server=$this->host;Database=$this->database", $this->username, $this->password);
+                     $this->conn = new PDO ("dblib:host=$this->host:$this->port;dbname=$this->database","$this->username","$this->password"); 
                     break;
                 case 'ORACLE':
                     $this->conn = new PDO( "oci:dbname=$this->database", $this->username, $this->password);//newly added
