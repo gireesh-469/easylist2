@@ -6,10 +6,11 @@
 */
 
 $db = array(
-	'host'     => '',
+    'host'     => '',
     'username' => '',
     'password' => '',
     'database' => '',
+    'connection_string' => '',
     'protocol' => 'MYSQL|SQLSRV|ORACLE|POSTGRESQL|SYBASE|INFORMIX',
 );
 

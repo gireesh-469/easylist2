@@ -17,10 +17,11 @@ class ListConnection
     public $database;
     public $protocol;
     public $conn;
-    public $port; //newly added
-    public $dsn_service;//newly added
-    public $dsn_protocol;// newly added
-    public $ids_server;// newly added
+    public $port;
+    public $dsn_service;
+    public $dsn_protocol;
+    public $ids_server;
+    public $connString;
     
     public function __construct(){
         
@@ -43,6 +44,7 @@ class ListConnection
             $this->dsn_service = (!empty($db['dsn_service'])) ? $db['dsn_service'] : null;
             $this->dsn_protocol= (!empty($db['dsn_protocol'])) ? $db['dsn_protocol'] : null;
             $this->ids_server  = (!empty($db['ids_server'])) ? $db['ids_server'] : null;
+            $this->connString  = trim($db['connection_string']);
         } else {
             throw new EasyListException("Configuration file 'config/EasyListConfig.php' is missing in EasyList root directory");
         }
@@ -51,30 +53,35 @@ class ListConnection
     public function setConnection(){
         
         try {
-            switch($this->protocol){
-                case 'MYSQL':
-                    $this->conn = new PDO("mysql:host=$this->host;dbname=$this->database", $this->username, $this->password);
-                    break;
-                case 'SQLSRV':
-                     //$this->conn = new PDO( "sqlsrv:Server=$this->host;Database=$this->database", $this->username, $this->password);
-                     $this->conn = new PDO ("dblib:host=$this->host:$this->port;dbname=$this->database","$this->username","$this->password"); 
-                    break;
-                case 'ORACLE':
-                    $this->conn = new PDO( "oci:dbname=$this->database", $this->username, $this->password);//newly added
-                    break;
-                case 'POSTGRESQL':
-                    $this->conn = new PDO("pgsql:host=$this->host;dbname=$this->database", $this->username, $this->password);// newly added
-                    break;
-                case 'SYBASE':
-                    $this->conn = new PDO ("dblib:host=$this->host:$this->port;dbname=$this->database","$this->username","$this->password"); // newly added
-                    //port = 10060;
-                    break;
-                case 'INFORMIX':
-                    $this->conn = new PDO("informix:host=$this->host; service=$this->dsn_service;database=$this->database; server=$this->ids_server; protocol=$this->dsn_protocol;EnableScrollableCursors=1", "$this->username ", "$this->password"); // newly added
-                    break;
-                default:
-                    $this->conn = null;
-                    break;
+
+            if($this->connString != ""){
+                $this->conn = new PDO ($this->connString,"$this->username","$this->password");
+            } else {           
+                switch($this->protocol){
+                    case 'MYSQL':
+                        $this->conn = new PDO("mysql:host=$this->host;dbname=$this->database", $this->username, $this->password);
+                        break;
+                    case 'SQLSRV':
+                        //$this->conn = new PDO( "sqlsrv:Server=$this->host;Database=$this->database", $this->username, $this->password);
+                        $this->conn = new PDO ("dblib:host=$this->host:$this->port;dbname=$this->database","$this->username","$this->password"); 
+                        break;
+                    case 'ORACLE':
+                        $this->conn = new PDO( "oci:dbname=$this->database", $this->username, $this->password);//newly added
+                        break;
+                    case 'POSTGRESQL':
+                        $this->conn = new PDO("pgsql:host=$this->host;dbname=$this->database", $this->username, $this->password);// newly added
+                        break;
+                    case 'SYBASE':
+                        $this->conn = new PDO ("dblib:host=$this->host:$this->port;dbname=$this->database","$this->username","$this->password"); // newly added
+                        //port = 10060;
+                        break;
+                    case 'INFORMIX':
+                        $this->conn = new PDO("informix:host=$this->host; service=$this->dsn_service;database=$this->database; server=$this->ids_server; protocol=$this->dsn_protocol;EnableScrollableCursors=1", "$this->username ", "$this->password"); // newly added
+                        break;
+                    default:
+                        $this->conn = null;
+                        break;
+                }
             }
             
             // set the PDO error mode to exception
