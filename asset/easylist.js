@@ -24,8 +24,8 @@ $(document).ready(function(){
 	$(document).on('click', '#'+button , function(e){
 		e.preventDefault();
 		addUpdateHiddenField('page', 1, form);
-		addUpdateHiddenField('sort', '', form);
-		addUpdateHiddenField('sort_type', '', form);
+		//addUpdateHiddenField('sort', '', form);
+		//addUpdateHiddenField('sort_type', '', form);
 		getCoreData();
 	});
 	function isHeaderObjectExist(objname){
