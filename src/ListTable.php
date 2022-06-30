@@ -51,13 +51,20 @@ class ListTable
     }
     
     public function jsScripts($random, $formid){
-
-        $isSortApply = $sortType = "";
+        $isSortApply = $sortType = ""; 
+        $pageSize = "10";
+        $page = 1;
         if(isset($_GET['sort']) && $_GET['sort'] != "") $isSortApply = $_GET['sort'];
         elseif(isset($_POST['sort']) && $_POST['sort'] != "") $isSortApply = $_POST['sort'];
 
         if(isset($_GET['sort_type']) && $_GET['sort_type'] != "") $sortType = $_GET['sort_type'];
         elseif(isset($_POST['sort_type']) && $_POST['sort_type'] != "") $sortType = $_POST['sort_type'];
+
+        if(isset($_GET['page_size']) && $_GET['page_size'] != "") $pageSize = $_GET['page_size'];
+        elseif(isset($_POST['page_size']) && $_POST['page_size'] != "") $pageSize = $_POST['page_size'];
+
+        if(isset($_GET['page']) && $_GET['page'] != "") $page = $_GET['page'];
+        elseif(isset($_POST['page']) && $_POST['page'] != "") $page = $_POST['page'];
 
         $html = "<script>
                     function pagination{$random}(page, element, page_size, total_records){
@@ -66,8 +73,8 @@ class ListTable
                         updateHiddenAttribute{$random}('page', page, form_id);
                         updateHiddenAttribute{$random}('page_size', page_size, form_id);
                         updateHiddenAttribute{$random}('total_records', total_records, form_id);
-                        updateHiddenAttribute{$random}('sort', '{$isSortApply}', '{$formid}');
-                        updateHiddenAttribute{$random}('sort_type', '{$sortType}', '{$formid}');
+                        updateHiddenAttribute{$random}('sort', '{$isSortApply}', form_id);
+                        updateHiddenAttribute{$random}('sort_type', '{$sortType}', form_id);
                         document.getElementById(form_id).submit();
                     }
                     function paginationBySize{$random}(page, element,total_records){
@@ -77,8 +84,8 @@ class ListTable
                         updateHiddenAttribute{$random}('page', page, form_id);
                         updateHiddenAttribute{$random}('page_size', page_size, form_id);
                         updateHiddenAttribute{$random}('total_records', total_records, form_id);
-                        updateHiddenAttribute{$random}('sort', '{$isSortApply}', '{$formid}');
-                        updateHiddenAttribute{$random}('sort_type', '{$sortType}', '{$formid}');
+                        updateHiddenAttribute{$random}('sort', '{$isSortApply}', form_id);
+                        updateHiddenAttribute{$random}('sort_type', '{$sortType}', form_id);
                         document.getElementById(form_id).submit();
                     }
                     function updateHiddenAttribute{$random}(name, value, form){
@@ -94,17 +101,24 @@ class ListTable
                             //append to form element that you want .
                             document.getElementById(form).appendChild(input);
                         }
-                    }
-                    function applySort{$random}(currentelement){
+                    }";
+            $html .= "updateHiddenAttribute{$random}('sort', '{$isSortApply}', '{$formid}');";
+            $html .= "updateHiddenAttribute{$random}('sort_type', '{$sortType}', '{$formid}');";
+            $html .= "updateHiddenAttribute{$random}('page_size', '{$pageSize}', '{$formid}');";
+            $html .= "updateHiddenAttribute{$random}('page', 1, '{$formid}');";
+
+            $html .= "function applySort{$random}(currentelement){
+                        form_id = '{$formid}';
                         var sortfield = currentelement.dataset.sort;
                         var sortType = currentelement.dataset.sort_type;
 
-                        updateHiddenAttribute{$random}('sort', sortfield, '{$formid}');
-                        updateHiddenAttribute{$random}('sort_type', sortType, '{$formid}');
+                        updateHiddenAttribute{$random}('sort', sortfield, form_id);
+                        updateHiddenAttribute{$random}('sort_type', sortType, form_id);
+                        updateHiddenAttribute{$random}('page_size', '{$pageSize}', form_id);
+                        updateHiddenAttribute{$random}('page', '{$page}', form_id);
                         document.getElementById(form_id).submit();
                     }";
                     $html .= "</script>";
-        
         return $html;
     }
     

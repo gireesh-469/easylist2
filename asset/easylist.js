@@ -23,7 +23,6 @@ $(document).ready(function(){
 	getConfiguration();
 	$(document).on('click', '#'+button , function(e){
 		e.preventDefault();
-		addUpdateHiddenField('page_size', 25, form);
 		addUpdateHiddenField('page', 1, form);
 		addUpdateHiddenField('sort', '', form);
 		addUpdateHiddenField('sort_type', '', form);
