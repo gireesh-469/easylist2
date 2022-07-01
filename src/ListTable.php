@@ -17,6 +17,7 @@ class ListTable
         $start_page = $page->total_records == 0 ? 0 : 1;
         $min = ($page->page - 1) * $page->page_size + $start_page;
         $max = $min + $page->total_pages - $start_page;
+        $currLimit = $page->page_size * $page->page;
         $sizeOptions = "";
         
         if($page_sizes == null){
@@ -36,7 +37,7 @@ class ListTable
                         <span class='ic ic-fastforward-prev'></span>
     				</a>
     				<div class='pagedisplay'>
-      					Records {$min} to {$max} (Total {$page->total_records} Results) - Page {$page->page} of {$page->total_pages}
+      					Records {$min} to {$currLimit} (Total {$page->total_records} Results) - Page {$page->page} of {$page->total_pages}
     				</div>
     				<a href='javascript:void(0)' class='next-page enabled' title='Next' data-page='{$page->next_page}' onclick='pagination{$random}({$page->next_page},this,{$page->page_size},{$page->total_records})'>
       					<span class='ic ic-fastforward'></span>
@@ -81,7 +82,7 @@ class ListTable
                         //var form_id = element.closest('form').id;
                         form_id = '{$formid}';
                         var page_size = element.value;
-                        updateHiddenAttribute{$random}('page', page, form_id);
+                        updateHiddenAttribute{$random}('page', 1, form_id);
                         updateHiddenAttribute{$random}('page_size', page_size, form_id);
                         updateHiddenAttribute{$random}('total_records', total_records, form_id);
                         updateHiddenAttribute{$random}('sort', '{$isSortApply}', form_id);

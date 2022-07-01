@@ -186,8 +186,8 @@ function isJsonObject(json_data) {
 function displayPaginationHTML(json_data){
 
 	var total_count = json_data.total_records;
-	var current_page = json_data.page;
-	var page_size = json_data.page_size;
+	var current_page = parseInt(json_data.page);
+	var page_size =  parseInt(json_data.page_size);
 	var total_pages = json_data.total_pages;
 	var start_page = total_count == 0 ? 0 : 1;
 	var min = (current_page - 1) * page_size + start_page;
@@ -204,7 +204,7 @@ function displayPaginationHTML(json_data){
       					<span class="ic ic-fastforward-prev"></span>
     				</a>
     				<div class="pagedisplay">
-      					Records `+min+` to `+max+` (Total `+total_count+` Results) - Page `+current_page+` of `+total_pages+`
+      					Records `+min+` to `+(page_size * current_page)+` (Total `+total_count+` Results) - Page `+current_page+` of `+total_pages+`
     				</div>
     				<a href="javascript:void(0)" class="next-page enabled" title="Next" data-page="`+next_page+`">
       					<span class="ic ic-fastforward"></span>
