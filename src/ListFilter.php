@@ -48,7 +48,7 @@ class ListFilter
             $dateFormatTo = isset($eachfilter['datetime_format_to']) ? trim($eachfilter['datetime_format_to']) : "Y-m-d";
             $empty_consider = isset($eachfilter['consider_empty']) ? trim(strtoupper($eachfilter['consider_empty'])) : "NO";
             
-            if($condition && ($postVariable || $empty_consider == "YES")){
+            if($condition && ($postVariable === "0" ||$postVariable || $empty_consider == "YES")){
                 $clean_filter = $this->CeanQuotes($condition);
                 $ary_subfilter = explode("?", $clean_filter);
                 
