@@ -18,6 +18,7 @@ class ListTable
         $min = ($page->page - 1) * $page->page_size + $start_page;
         $max = $min + $page->total_pages - $start_page;
         $currLimit = $page->page_size * $page->page;
+        if($currLimit > $page->total_records) $currLimit = $page->total_records;
         $sizeOptions = "";
         
         if($page_sizes == null){
