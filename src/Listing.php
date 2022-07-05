@@ -87,7 +87,8 @@ class Listing
             ,"next_page"       => 1
             ,"prev_page"       => 1
             ,"last_page"       => 1
-            ,"total_pages"     => 1 
+            ,"total_pages"     => 1
+            ,'is_pagination'   => $pagination
             ,"return_data"     => $return_data
             ,"data"            => array()
         );
@@ -237,6 +238,8 @@ class Listing
                 unset($mainData["total_records"]);
                 unset($mainData["return_data"]);
                 unset($mainData["data"]);
+                unset($mainData["is_pagination"]);
+
                 
                 $mainData["query"] = $select . $sql;
                 $mainData["count_query"] = "SELECT COUNT(*) AS count  {$having_columns} FROM (SELECT 1 " . $sql . ") AS query";

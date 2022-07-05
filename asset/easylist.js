@@ -11,7 +11,6 @@ $(document).ready(function(){
 			header = isJsonObject(decodeURIComponent($('#easylist-config').val()));
 			form = header.form_id;
 			button = header.button_id;
-			addUpdateHiddenField('page_size', 25, form);
 			addUpdateHiddenField('page', 1, form);
 			addUpdateHiddenField('sort', '', form);
 			addUpdateHiddenField('sort_type', '', form);
@@ -55,7 +54,10 @@ $(document).ready(function(){
 						table  		+= "</table>";
 					}
 					$('#'+header.target_div_id).html(table);
-					widgetPagination(response);
+					if(response.hasOwnProperty('is_pagination') && response.is_pagination == 'YES'){
+						addUpdateHiddenField('page_size', response.page_size, form);
+						widgetPagination(response);
+					}
 					applySortClass();
 				},
 				error : function(response) {
