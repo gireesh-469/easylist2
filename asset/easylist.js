@@ -116,7 +116,7 @@ $(document).ready(function(){
 								}
 							});
 							eachHtmlItems += urlValue;
-						table += '<td style="min-width:89px;" class="text-center">'+eachHtmlItems+'</td>';
+						table += '<td style="min-width:89px;width:18%;" class="text-center">'+eachHtmlItems+'</td>';
 					}
 					table +="</tr>";
 				});
