@@ -144,7 +144,12 @@ class Listing
             if($pagination == "YES"){
                 if($total_records == 0){
                     try{
-                        $stmt = self::$connection->prepare("SELECT COUNT(*) AS count {$having_columns} FROM (SELECT 1 AS count " . $count_sql . ") AS query");
+                        $innerQryName = "";
+                        if(self::$protocol != 'ORACLE'){
+                            $innerQryName = " AS query ";
+                        }
+
+                        $stmt = self::$connection->prepare("SELECT COUNT(*) AS count {$having_columns} FROM (SELECT 1 AS count " . $count_sql . ") {$innerQryName} ");
                         $stmt->execute();
                         $rec = $stmt->fetch(PDO::FETCH_ASSOC);
                         
