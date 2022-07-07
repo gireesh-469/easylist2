@@ -241,5 +241,28 @@ section {
   left: 0.5em;
   transform: rotate(180deg);
 }
+
+
+
+.ic.ic-disable:before,.ic.ic-disable:after{
+  border-color: transparent transparent transparent #bbb7b7 !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
+
+.ic-disable-a{
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+
+.ic.ic-skip.ic-disable{
+  background: linear-gradient(0deg,#fff 0%, #fff 12.5%, transparent 12.5%, transparent 87.5%, #fff 87.5%),linear-gradient(90deg,transparent 87.5%, #bbb7b7 87.5%) !important;
+}
+
+.ic.ic-skip-prev.ic-disable{
+  background: linear-gradient(0deg,#fff 0%, #fff 12.5%, transparent 12.5%, transparent 87.5%, #fff 87.5%),linear-gradient(90deg,transparent 87.5%, #bbb7b7 87.5%) !important;
+  transform: rotate(180deg);
+}
  
 

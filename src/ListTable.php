@@ -20,6 +20,15 @@ class ListTable
         $currLimit = $page->page_size * $page->page;
         if($currLimit > $page->total_records) $currLimit = $page->total_records;
         $sizeOptions = "";
+        $disablePrevClass = $disableNextClass = $disablePrevAClass = $disableNextAClass = "";
+	if($page->page == 1 ){
+		$disablePrevClass = "ic-disable";
+		$disablePrevAClass = "ic-disable-a";
+	}
+	if($page->page == $page->total_pages){
+		$disableNextClass = "ic-disable";
+		$disableNextAClass = "ic-disable-a";
+	}
         
         if($page_sizes == null){
             $page_sizes = array(10,25,50,100,250);
@@ -31,20 +40,20 @@ class ListTable
         }
         
         $html = "<div class='custom-pagination'>
-					<a href='javascript:void(0)' class='first-page enabled' title='First' data-page='1' onclick='pagination{$random}(1,this,{$page->page_size},{$page->total_records})'>
-                        <span class='ic ic-skip-prev'></span>
+					<a href='javascript:void(0)' class='first-page {$disablePrevAClass}' title='First' data-page='1' onclick='pagination{$random}(1,this,{$page->page_size},{$page->total_records})'>
+                        <span class='ic ic-skip-prev {$disablePrevClass}'></span>
     				</a>
-    				<a href='javascript:void(0)' class='prev-page enabled' title='Previous' data-page='{$page->prev_page}' onclick='pagination{$random}({$page->prev_page},this,{$page->page_size},{$page->total_records})'>
-                        <span class='ic ic-fastforward-prev'></span>
+    				<a href='javascript:void(0)' class='prev-page {$disablePrevAClass}' title='Previous' data-page='{$page->prev_page}' onclick='pagination{$random}({$page->prev_page},this,{$page->page_size},{$page->total_records})'>
+                        <span class='ic ic-fastforward-prev {$disablePrevClass}'></span>
     				</a>
     				<div class='pagedisplay'>
       					Records {$min} to {$currLimit} (Total {$page->total_records} Results) - Page {$page->page} of {$page->total_pages}
     				</div>
-    				<a href='javascript:void(0)' class='next-page enabled' title='Next' data-page='{$page->next_page}' onclick='pagination{$random}({$page->next_page},this,{$page->page_size},{$page->total_records})'>
-      					<span class='ic ic-fastforward'></span>
+    				<a href='javascript:void(0)' class='next-page {$disableNextAClass}' title='Next' data-page='{$page->next_page}' onclick='pagination{$random}({$page->next_page},this,{$page->page_size},{$page->total_records})'>
+      					<span class='ic ic-fastforward {$disableNextClass}'></span>
     				</a>
-    				<a href='javascript:void(0)' class='last-page enabled' title='Last' data-page='{$page->last_page}' onclick='pagination{$random}({$page->last_page},this,{$page->page_size},{$page->total_records})'>
-      					<span class='ic ic-skip'></span>
+    				<a href='javascript:void(0)' class='last-page {$disableNextAClass}' title='Last' data-page='{$page->last_page}' onclick='pagination{$random}({$page->last_page},this,{$page->page_size},{$page->total_records})'>
+      					<span class='ic ic-skip {$disableNextClass}'></span>
     				</a>&nbsp;
 					<select class='page-limit' onchange=paginationBySize{$random}({$page->page},this,{$page->total_records})>{$sizeOptions}</select>
   				</div>";
