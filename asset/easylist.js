@@ -188,60 +188,63 @@ function isJsonObject(json_data) {
 function displayPaginationHTML(json_data){
 
 	var total_count = json_data.total_records;
-	var current_page = parseInt(json_data.page);
-	var page_size =  parseInt(json_data.page_size);
-	var total_pages = json_data.total_pages;
-	var start_page = total_count == 0 ? 0 : 1;
-	var min = (current_page - 1) * page_size + start_page;
-	var max = min + total_pages - start_page;
-	var next_page = json_data.next_page;
-	var prev_page = json_data.prev_page;
-	
-	var disablePrevClass = disableNextClass = disablePrevAClass = disableNextAClass = "";
-	if(current_page == 1 ){
-		disablePrevClass = "ic-disable";
-		disablePrevAClass = "ic-disable-a";
-	}
-	if(current_page == total_pages){
-		disableNextClass = "ic-disable";
-		disableNextAClass = "ic-disable-a";
-	}
+	if(total_count > 0){
+		var current_page = parseInt(json_data.page);
+		var page_size =  parseInt(json_data.page_size);
+		var total_pages = json_data.total_pages;
+		var current_page_count = json_data.current_page_count;
+		var start_page = total_count == 0 ? 0 : 1;
+		var min = (current_page - 1) * page_size + start_page;
+		var max = min + current_page_count - start_page;
+		var next_page = json_data.next_page;
+		var prev_page = json_data.prev_page;
+		
+		var disablePrevClass = disableNextClass = disablePrevAClass = disableNextAClass = "";
+		if(current_page == 1 ){
+			disablePrevClass = "ic-disable";
+			disablePrevAClass = "ic-disable-a";
+		}
+		if(current_page == total_pages){
+			disableNextClass = "ic-disable";
+			disableNextAClass = "ic-disable-a";
+		}
 
-	var html = `<div class="custom-pagination">
-					<a href="javascript:void(0)" class="first-page `+disablePrevAClass+`"  title="First" data-page="1">
-      					<span class="ic ic-skip-prev `+disablePrevClass+`"></span>
-    				</a>
-    				<a href="javascript:void(0)" class="prev-page `+disablePrevAClass+`" title="Previous" data-page="`+prev_page+`">
-      					<span class="ic ic-fastforward-prev `+disablePrevClass+`"></span>
-    				</a>
-    				<div class="pagedisplay">
-      					Records `+min+` to `+(page_size * current_page)+` (Total `+total_count+` Results) - Page `+current_page+` of `+total_pages+`
-    				</div>
-    				<a href="javascript:void(0)" class="next-page `+disableNextAClass+`" title="Next" data-page="`+next_page+`">
-      					<span class="ic ic-fastforward `+disableNextClass+`"></span>
-    				</a>
-    				<a href="javascript:void(0)" class="last-page `+disableNextAClass+`" title="Last" data-page="`+total_pages+`">
-      					<span class="ic ic-skip  `+disableNextClass+`"></span>
-    				</a>
-					<select class="page-limit">
-						<option value="10" `+(page_size == 10 ? "selected" : "")+`>10</option>
-						<option value="25" `+(page_size == 25 ? "selected" : "")+`>25</option>
-						<option value="50" `+(page_size == 50 ? "selected" : "")+`>50</option>
-						<option value="100" `+(page_size == 100 ? "selected" : "")+`>100</option>
-						<option value="250" `+(page_size == 250 ? "selected" : "")+`>250</option>
-					</select>
-  				</div>`;
-	if(header.pager == 'TOP'){
-		$('.custom-pagination').remove();
-		$('#' + header.target_div_id).prepend(html);
-	}else if(header.pager == 'BOTTOM'){
-		$('.custom-pagination').remove();
-		$('#' + header.target_div_id).append(html);
-	}
-	else{
-		$('.custom-pagination').remove();
-		$('#' + header.target_div_id).prepend(html);
-		$('#' + header.target_div_id).append(html);
+		var html = `<div class="custom-pagination">
+						<a href="javascript:void(0)" class="first-page `+disablePrevAClass+`"  title="First" data-page="1">
+							<span class="ic ic-skip-prev `+disablePrevClass+`"></span>
+						</a>
+						<a href="javascript:void(0)" class="prev-page `+disablePrevAClass+`" title="Previous" data-page="`+prev_page+`">
+							<span class="ic ic-fastforward-prev `+disablePrevClass+`"></span>
+						</a>
+						<div class="pagedisplay">
+							Records `+min+` to `+(max)+` (Total `+total_count+` Results) - Page `+current_page+` of `+total_pages+`
+						</div>
+						<a href="javascript:void(0)" class="next-page `+disableNextAClass+`" title="Next" data-page="`+next_page+`">
+							<span class="ic ic-fastforward `+disableNextClass+`"></span>
+						</a>
+						<a href="javascript:void(0)" class="last-page `+disableNextAClass+`" title="Last" data-page="`+total_pages+`">
+							<span class="ic ic-skip  `+disableNextClass+`"></span>
+						</a>
+						<select class="page-limit">
+							<option value="10" `+(page_size == 10 ? "selected" : "")+`>10</option>
+							<option value="25" `+(page_size == 25 ? "selected" : "")+`>25</option>
+							<option value="50" `+(page_size == 50 ? "selected" : "")+`>50</option>
+							<option value="100" `+(page_size == 100 ? "selected" : "")+`>100</option>
+							<option value="250" `+(page_size == 250 ? "selected" : "")+`>250</option>
+						</select>
+					</div>`;
+		if(header.pager == 'TOP'){
+			$('.custom-pagination').remove();
+			$('#' + header.target_div_id).prepend(html);
+		}else if(header.pager == 'BOTTOM'){
+			$('.custom-pagination').remove();
+			$('#' + header.target_div_id).append(html);
+		}
+		else{
+			$('.custom-pagination').remove();
+			$('#' + header.target_div_id).prepend(html);
+			$('#' + header.target_div_id).append(html);
+		}
 	}
 }
 

@@ -215,6 +215,7 @@ class Listing
                 $stmt = self::$connection->prepare($select . $sql);
                 $stmt->execute();
                 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $mainData["current_page_count"] = count($data);
             }catch(Exception $e){
                 throw new EasyListException("Error in the query : " . $e->getMessage());
             }
