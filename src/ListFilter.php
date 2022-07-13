@@ -79,7 +79,7 @@ class ListFilter
                             $new_date = $dateObj->format($dateFormatTo);
                             $subfilter .= "'{$new_date}'";
                         } else {
-                            throw new EasyListException("Date not matching with the 'datetime_format_from'. ");
+                            //throw new EasyListException("Date not matching with the 'datetime_format_from'. ");
                             $subfilter .= "''"; 
                         }
                         break;
