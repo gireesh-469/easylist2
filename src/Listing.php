@@ -404,10 +404,10 @@ class Listing
      */
     public static function List($config)
     {
-        $return_data = isset($config["return_data"]) ? $config["return_data"] : "JSON";
+        $return_data = isset($config["return_data"]) ? strtoupper(trim($config["return_data"])) : "JSON";
         $page_sizes  = isset($config["page_sizes"]) ? $config["page_sizes"] : array(10,25,50,100,250);
         $formid      = isset($config["form_id"]) ? $config["form_id"] : "";
-        $pager       = isset($config["pager"]) ? strtoupper(trim($config["pager"])) : "TOP";
+        $pager       = (isset($config["pager"]) && in_array(strtoupper(trim($config["pager"])), array('BOTH','TOP','BOTTOM'))) ? strtoupper(trim($config["pager"])) : "TOP";
         $random      = rand (10000, 99999);
         
         if($formid == ""){

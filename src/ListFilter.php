@@ -58,6 +58,10 @@ class ListFilter
                     $postVariable = $postVariable[0];
                 }
                 
+                if(!is_array($postVariable)){
+                    $postVariable = trim($postVariable);
+                }
+
                 switch($type){
                     case 'BOOLEAN' :
                         if($postVariable != ""){
