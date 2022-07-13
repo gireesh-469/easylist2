@@ -339,8 +339,15 @@ class Listing
             $complextype = isset($eachfilter['type']) ? trim(strtoupper($eachfilter['type'])) : "";
             
             if($complextype == "COMPLEX"){
+                $subfilterComplex = "";
                 foreach($eachfilter['condition'] AS $subEachFilter){
-                    $subfilter .= $listFilter->filter($subEachFilter, $methodArray);
+                    $subfilterComplex .= $listFilter->filter($subEachFilter, $methodArray);
+                }
+                
+                if($subfilterComplex != ""){
+                    $subfilterComplex = trim($subfilterComplex, 'AND ');
+                    $subfilterComplex = trim($subfilterComplex, 'OR ');
+                    $subfilter .= "(" . $subfilterComplex . ")";
                 }
             } else {
                 $subfilter = $listFilter->filter($eachfilter, $methodArray);
