@@ -60,6 +60,7 @@ class ListFilter
                 
                 if(!is_array($postVariable)){
                     $postVariable = trim($postVariable);
+                    $postVariable = str_replace("'", "''", $postVariable);
                 }
 
                 switch($type){
@@ -92,6 +93,7 @@ class ListFilter
                         break;
                     case 'ARRAY' :
                         if(is_array($postVariable)){
+                            $postVariable = array_map(function($value) { return str_replace("'", "''", $value); }, $postVariable); 
                             $subValues = "'" . implode("','", $postVariable) . "'";
                             $subfilter .= $subValues;
                         } else {
