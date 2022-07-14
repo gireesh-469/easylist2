@@ -1,6 +1,6 @@
 # PHP EasyList - Version 1.0
 #### by 
-## PHP Team DigitalMesh
+## PHP Team Digital Mesh
 
 
 
